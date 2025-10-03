@@ -7,8 +7,10 @@ import { IconButton } from '@/components/ui/IconButton';
 import { StarIcon } from '@/components/icons/StarIcon';
 import { BaseCaption } from '@/components/ui/BaseCaption';
 import { BookIcon } from '@/components/icons/BookIcon';
-
 import { router } from 'expo-router';
+import { verifyInstallation } from 'nativewind';
+
+import '../../global.css'
 
 export default function Dashboard() {
   // Получаем отступы для безопасной области

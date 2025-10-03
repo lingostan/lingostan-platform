@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, ScrollView } from 'react-native';
+import { Text, StyleSheet, ScrollView, View } from 'react-native';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseText } from '@/components/ui/BaseText';
 import { BaseInput } from '@/components/ui/BaseInput';
+import { styled } from 'nativewind';
 
 
 
@@ -47,6 +48,12 @@ export default function Quiz() {
         secureTextEntry
       />
 
+
+      <View className="flex-1 items-center justify-center bg-white">
+        <Text className="text-xl font-bold text-blue-500">
+          Nativewind!
+        </Text>
+      </View>
       <Text style={styles.title}>Викторина!</Text>
 
       <PrimaryButton onPress={() => console.log('demo')} title="Войти" variant="green" size="medium" mode="filled" />
