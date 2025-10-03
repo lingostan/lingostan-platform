@@ -1,26 +1,26 @@
-import React, { useRef } from 'react';
+import React, { useRef } from 'react'
 import {
   View,
   TouchableOpacity,
   ActivityIndicator,
   Animated,
   StyleSheet,
-} from 'react-native';
+} from 'react-native'
 
-import { ButtonColors } from '../theme/colors';
+import { ButtonColors } from '../theme/colors'
 
 // Типы
 
-type IconButtonSize = 'small' | 'medium' | 'large';
-type IconButtonVariant = keyof typeof ButtonColors;
+type IconButtonSize = 'small' | 'medium' | 'large'
+type IconButtonVariant = keyof typeof ButtonColors
 
 interface IconButtonProps {
-  icon: React.ReactNode;
-  onPress?: () => void;
-  variant?: IconButtonVariant;
-  size?: IconButtonSize;
-  disabled?: boolean;
-  loading?: boolean;
+  icon: React.ReactNode
+  onPress?: () => void
+  variant?: IconButtonVariant
+  size?: IconButtonSize
+  disabled?: boolean
+  loading?: boolean
 }
 
 export const IconButton: React.FC<IconButtonProps> = ({
@@ -32,56 +32,54 @@ export const IconButton: React.FC<IconButtonProps> = ({
   loading = false,
   ...rest
 }) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current
 
   const handlePressIn = () => {
-    if (disabled || loading) return;
+    if (disabled || loading) return
     Animated.spring(scaleAnim, {
       toValue: 0.9,
       useNativeDriver: true,
-    }).start();
-  };
+    }).start()
+  }
 
   const handlePressOut = () => {
-    if (disabled || loading) return;
+    if (disabled || loading) return
     Animated.spring(scaleAnim, {
       toValue: 1,
       friction: 3,
       tension: 40,
       useNativeDriver: true,
     }).start(() => {
-      onPress?.();
-    });
-  };
+      onPress?.()
+    })
+  }
 
   // Размеры
   const getSizeStyle = () => {
     switch (size) {
       case 'small':
-        return { width: 36, height: 36, borderRadius: 18 };
+        return { width: 36, height: 36, borderRadius: 18 }
       case 'large':
-        return { width: 80, height: 80, borderRadius: 40 };
+        return { width: 80, height: 80, borderRadius: 40 }
       default:
-        return { width: 48, height: 48, borderRadius: 24 };
+        return { width: 48, height: 48, borderRadius: 24 }
     }
-  };
+  }
 
   // Цвета
-  const { background, shadow } = ButtonColors[variant];
+  const { background, shadow } = ButtonColors[variant]
 
   // boxShadow
-  const getBoxShadow = () =>
-    `0px 10px 0 ${shadow}`;
+  const getBoxShadow = () => `0px 10px 0 ${shadow}`
 
   return (
-    
     <Animated.View
       style={[
         styles.container,
         getSizeStyle(),
         {
           backgroundColor: background,
-          transform: [{scale: scaleAnim }, { scaleY: 0.8 }], // делает кнопку чуть сплющенной по вертикали
+          transform: [{ scale: scaleAnim }, { scaleY: 0.8 }], // делает кнопку чуть сплющенной по вертикали
           opacity: disabled ? 0.5 : 1,
           boxShadow: getBoxShadow(),
         },
@@ -102,17 +100,17 @@ export const IconButton: React.FC<IconButtonProps> = ({
         )}
       </TouchableOpacity>
     </Animated.View>
-  );
-};
+  )
+}
 
 // Вспомогательная функция для цвета тени
 const hexToRgba = (hex: string, alpha: number): string => {
-  const bigint = parseInt(hex.replace('#', ''), 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
+  const bigint = parseInt(hex.replace('#', ''), 16)
+  const r = (bigint >> 16) & 255
+  const g = (bigint >> 8) & 255
+  const b = bigint & 255
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -121,27 +119,27 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 40, // делает из квадрата — круг
-    position: 'relative'
-  },
-  touchable: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: 'relative',
   },
   iconContainer: {
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     position: 'relative',
-    zIndex: 2
+    zIndex: 2,
   },
   shadow: {
-    position: 'absolute',
+    backgroundColor: 'yellow',
     bottom: 16,
-    left: 0,
-    right: 0,
     height: 5,
+    left: 0,
+    position: 'absolute',
+    right: 0,
     zIndex: 1,
-    backgroundColor: 'yellow'
-  }
-});
+  },
+  touchable: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
+  },
+})

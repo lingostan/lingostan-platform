@@ -1,5 +1,4 @@
-import { Stack } from 'expo-router';
-
+import { Stack } from 'expo-router'
 
 export default function QuizLayout() {
   return (
@@ -7,5 +6,5 @@ export default function QuizLayout() {
       <Stack.Screen name="index" options={{ title: 'Quiz' }} />
       <Stack.Screen name="[id]/index" options={{ title: 'Quiz Details' }} />
     </Stack>
-  );
+  )
 }

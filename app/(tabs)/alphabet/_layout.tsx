@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack } from 'expo-router'
 
 export default function AlphabetLayout() {
   return (
@@ -6,5 +6,5 @@ export default function AlphabetLayout() {
       <Stack.Screen name="index" options={{ title: 'Alphabet Lessons' }} />
       <Stack.Screen name="[id]" options={{ title: 'Lesson' }} />
     </Stack>
-  );
+  )
 }

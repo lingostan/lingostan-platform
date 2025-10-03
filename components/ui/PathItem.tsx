@@ -1,16 +1,21 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React from 'react'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 
-type PathItemStatus = 'completed' | 'current' | 'locked';
+type PathItemStatus = 'completed' | 'current' | 'locked'
 
 interface PathItemProps {
-  status: PathItemStatus;
-  children?: React.ReactNode; // например, номер шага
-  icon?: React.ReactNode; // иконка (например SVG или Image)
-  onPress?: () => void; // обработчик клика
+  status: PathItemStatus
+  children?: React.ReactNode // например, номер шага
+  icon?: React.ReactNode // иконка (например SVG или Image)
+  onPress?: () => void // обработчик клика
 }
 
-export const PathItem: React.FC<PathItemProps> = ({ status, children, icon, onPress }) => {
+export const PathItem: React.FC<PathItemProps> = ({
+  status,
+  children,
+  icon,
+  onPress,
+}) => {
   const getStyles = () => {
     switch (status) {
       case 'completed':
@@ -18,25 +23,25 @@ export const PathItem: React.FC<PathItemProps> = ({ status, children, icon, onPr
           backgroundColor: '#58cc02',
           borderColor: '#58cc02',
           color: '#fff',
-        };
+        }
       case 'current':
         return {
           backgroundColor: '#fff',
           borderColor: '#58cc02',
           color: '#58cc02',
-        };
+        }
       case 'locked':
         return {
           backgroundColor: '#f0f0f0',
           borderColor: '#ccc',
           color: '#aaa',
-        };
+        }
     }
-  };
+  }
 
-  const styles = getStyles();
+  const styles = getStyles()
 
-  const isTouchable = !!onPress;
+  const isTouchable = !!onPress
 
   const content = (
     <View
@@ -51,10 +56,12 @@ export const PathItem: React.FC<PathItemProps> = ({ status, children, icon, onPr
       {icon ? (
         <View style={stylesPathItem.icon}>{icon}</View>
       ) : (
-        <Text style={{ color: styles.color, fontWeight: 'bold' }}>{children}</Text>
+        <Text style={{ color: styles.color, fontWeight: 'bold' }}>
+          {children}
+        </Text>
       )}
     </View>
-  );
+  )
 
   return (
     <View style={stylesPathItem.container}>
@@ -66,29 +73,28 @@ export const PathItem: React.FC<PathItemProps> = ({ status, children, icon, onPr
         content
       )}
     </View>
-  );
-};
-
+  )
+}
 
 const stylesPathItem = StyleSheet.create({
+  circle: {
+    alignItems: 'center',
+    borderRadius: 20,
+    borderWidth: 2,
+    height: 40,
+    justifyContent: 'center',
+    marginHorizontal: 8,
+    width: 40,
+  },
   container: {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
   },
-  circle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 8,
-  },
   icon: {
-    width: 24,
+    alignItems: 'center',
     height: 24,
     justifyContent: 'center',
-    alignItems: 'center',
+    width: 24,
   },
-});
+})
