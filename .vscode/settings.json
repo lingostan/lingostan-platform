@@ -1,0 +1,33 @@
+{
+    // ✅ Включить форматирование при сохранении
+    "editor.formatOnSave": true,
+    // ✅ Использовать ESLint как форматтер для всех JS/TS/JSX/TSX файлов
+    "[javascript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    // ✅ Включить форматирование через ESLint (обязательно!)
+    "eslint.format.enable": true,
+    // ✅ Автоматически применять исправления ESLint при сохранении
+    "eslint.codeActionsOnSave.mode": "all",
+    // ⚠️ Отключить встроенные форматтеры JS/TS, чтобы не мешали
+    "javascript.format.enable": false,
+    "typescript.format.enable": false,
+    // Опционально: явно указать путь к конфигу (для ESLint v9 flat config)
+    "eslint.options": {
+        "overrideConfigFile": "./eslint.config.js"
+    },
+    "import/resolver": {
+        "typescript": {
+            "project": "./tsconfig.json",
+        },
+    },
+}

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef } from 'react'
 import {
   View,
   Text,
@@ -7,34 +7,34 @@ import {
   StyleSheet,
   Dimensions,
   ActivityIndicator,
-} from 'react-native';
+} from 'react-native'
 
-import { ButtonColors } from '../theme/colors';
+import { ButtonColors } from '../theme/colors'
 
 // Получаем ширину экрана для адаптивности
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get('window')
 
 // Типы для вариантов цвета
-type ButtonVariant = keyof typeof ButtonColors;
+type ButtonVariant = keyof typeof ButtonColors
 
 // Размеры кнопок
-type ButtonSize = 'small' | 'medium' | 'large';
+type ButtonSize = 'small' | 'medium' | 'large'
 
 // Режимы отображения
-type ButtonMode = 'filled' | 'outline' | 'transparent';
+type ButtonMode = 'filled' | 'outline' | 'transparent'
 
 // Типы для пропсов кнопки
 interface PrimaryButtonProps {
-  onPress: () => void;
-  title?: string;
-  disabled?: boolean;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  mode?: ButtonMode;
-  loading?: boolean;
-  fluid?: boolean; 
-  textCenter?: boolean;
-  children?: React.ReactNode;
+  onPress: () => void
+  title?: string
+  disabled?: boolean
+  variant?: ButtonVariant
+  size?: ButtonSize
+  mode?: ButtonMode
+  loading?: boolean
+  fluid?: boolean
+  textCenter?: boolean
+  children?: React.ReactNode
 }
 
 export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
@@ -47,23 +47,22 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   loading = false,
   fluid = false,
   textCenter = true,
-  children = null
+  children = null,
 }) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current
 
   const handlePressIn = () => {
-    if (disabled || loading) return;
+    if (disabled || loading) return
     if (mode !== 'transparent') {
       Animated.spring(scaleAnim, {
         toValue: 0.95,
         useNativeDriver: true,
-      }).start();
+      }).start()
     }
-    
-  };
+  }
 
   const handlePressOut = () => {
-    if (disabled || loading) return;
+    if (disabled || loading) return
     if (mode !== 'transparent') {
       Animated.spring(scaleAnim, {
         toValue: 1,
@@ -71,16 +70,15 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         tension: 40,
         useNativeDriver: true,
       }).start(() => {
-        onPress();
-      });
+        onPress()
+      })
     } else {
-      onPress();
+      onPress()
     }
-    
-  };
+  }
 
   // Цвета по выбранному варианту
-  const { background, shadow } = ButtonColors[variant];
+  const { background, shadow } = ButtonColors[variant]
 
   // Определяем стили в зависимости от режима
   const getContainerStyle = () => {
@@ -90,17 +88,17 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
           backgroundColor: 'transparent',
           borderWidth: 2,
           borderColor: background,
-        };
+        }
       case 'transparent':
         return {
           backgroundColor: 'transparent',
-        };
+        }
       default:
         return {
           backgroundColor: background,
-        };
+        }
     }
-  };
+  }
 
   // Размер кнопки
   const getSizeStyle = () => {
@@ -110,21 +108,21 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
           paddingVertical: 8,
           paddingHorizontal: 16,
           borderRadius: 12,
-        };
+        }
       case 'large':
         return {
           paddingVertical: 18,
           paddingHorizontal: 40,
           borderRadius: 20,
-        };
+        }
       default:
         return {
           paddingVertical: 15,
           paddingHorizontal: 30,
           borderRadius: 16,
-        };
+        }
     }
-  };
+  }
 
   // Стиль тени (всегда одинаковый)
   const getShadowStyle = () => {
@@ -134,8 +132,8 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         width: 0,
         height: 4,
       },
-    };
-  };
+    }
+  }
 
   return (
     <Animated.View
@@ -161,54 +159,59 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         <View style={styles.innerButton}>
           {children}
           {loading ? (
-            <ActivityIndicator color={mode === 'filled' ? '#fff' : background} />
+            <ActivityIndicator
+              color={mode === 'filled' ? '#fff' : background}
+            />
           ) : (
-            title && <Text
-              style={[
-                styles.buttonText,
-                {
-                  textAlign: textCenter ? 'center': 'left',
-                  color:
-                    mode === 'filled'
-                      ? '#fff'
-                      : mode === 'transparent'
-                        ? background
-                        : background,
-                  fontSize: size === 'small' ? 14 : size === 'large' ? 18 : 17,
-                },
-              ]}
-            >
-              {title}
-            </Text>
+            title && (
+              <Text
+                style={[
+                  styles.buttonText,
+                  {
+                    textAlign: textCenter ? 'center' : 'left',
+                    color:
+                      mode === 'filled'
+                        ? '#fff'
+                        : mode === 'transparent'
+                          ? background
+                          : background,
+                    fontSize:
+                      size === 'small' ? 14 : size === 'large' ? 18 : 17,
+                  },
+                ]}
+              >
+                {title}
+              </Text>
+            )
           )}
         </View>
       </TouchableOpacity>
     </Animated.View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 8,
-    minWidth: 100,
-    maxWidth: '100%',
     alignSelf: 'center',
+    elevation: 8,
+    justifyContent: 'center',
     marginVertical: 10,
+    maxWidth: '100%',
+    minWidth: 100,
+  },
+  buttonText: {
+    alignContent: 'center',
+    flex: 1,
+    fontWeight: 'bold',
+    justifyContent: 'center',
+    textTransform: 'uppercase',
   },
   innerButton: {
-    width: '100%',
-    textAlign: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
+    textAlign: 'center',
+    width: '100%',
   },
-  buttonText: {
-    flex: 1,
-    justifyContent: 'center',
-    alignContent: 'center',
-    textTransform: 'uppercase',
-    fontWeight: 'bold'
-  },
-});
+})
