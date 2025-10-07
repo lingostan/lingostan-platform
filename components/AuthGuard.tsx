@@ -19,7 +19,10 @@ export default function AuthGuard({ children }: any) {
     }
 
     verifyAuth()
-  }, [router])
+  }, 
+  
+  
+  [router])
 
   // Показываем спиннер, пока проверяется авторизация
   if (isLoading) {

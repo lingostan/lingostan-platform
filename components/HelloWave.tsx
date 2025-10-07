@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 import { useEffect } from 'react'
 import { StyleSheet } from 'react-native'
 import Animated, {

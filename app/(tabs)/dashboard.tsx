@@ -19,6 +19,7 @@ import { BaseCaption } from '@/components/ui/BaseCaption'
 import { IconButton } from '@/components/ui/IconButton'
 
 import '../../global.css'
+import { path } from '@/constants/Path'
 
 export default function Dashboard() {
   // Получаем отступы для безопасной области
@@ -125,7 +126,7 @@ export default function Dashboard() {
             <View style={styles.step5}>
               <IconButton
                 icon={<StarIcon />}
-                onPress={() => console.log('SVG кнопка')}
+                onPress={() => {router.push(path.audioWordMap)}}
                 variant="green"
                 size="large"
               />

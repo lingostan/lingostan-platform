@@ -48,6 +48,7 @@ export default function RootLayout() {
           <Stack.Screen name="sign-up/index" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="alphabet/index" />
+          <Stack.Screen name="audioWordMap/index" />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
