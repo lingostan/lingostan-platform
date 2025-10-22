@@ -31,22 +31,41 @@ export default function TabLayout() {
         <Tabs.Screen
           name="dashboard"
           options={{
-            title: 'Dashboard',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="dashboard" color={color} />,
+            title: 'Главная',
+            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
           }}
         />
         <Tabs.Screen
-          name="quiz"
+          name="alphabet"
           options={{
-            title: 'Quiz',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="extension" color={color} />,
+            title: 'Словарь',
+            tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.fill" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="statistics"
+          options={{
+            title: 'Статистика',
+            tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
           }}
         />
         <Tabs.Screen
           name="profile"
           options={{
-            title: 'Profile',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="account-circle" color={color} />,
+            title: 'Профиль',
+            tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="quiz"
+          options={{
+            href: null, // Hide from tab bar
+          }}
+        />
+        <Tabs.Screen
+          name="__quiz"
+          options={{
+            href: null, // Hide from tab bar
           }}
         />
       </Tabs>
