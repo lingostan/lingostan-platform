@@ -1,81 +1,109 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
-import { BaseInput } from '@/components/ui/BaseInput';
-import { PrimaryButton } from '@/components/ui/PrimaryButton';
-import { BaseText } from '@/components/ui/BaseText';
+import { useRouter } from "expo-router";
+import { Controller, useForm } from "react-hook-form";
+import { View, StyleSheet, Platform } from "react-native";
+
+import { BaseInput } from "@/components/ui/BaseInput";
+import { BaseText } from "@/components/ui/BaseText";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { api } from "@/services/https";
+import { LoginParams } from "@/types/auth/model";
+import { saveTokens } from "@/utils/secure";
 
 export default function SignIn() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { control, handleSubmit } = useForm<LoginParams>();
+
   const router = useRouter();
 
-  // Функция для входа
-  const handleLogin = async () => {
-    try {
-      const storedUser = await AsyncStorage.getItem('user');
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
-        if (user.email === email && user.password === password) {
-          Alert.alert('Успех', 'Вы успешно вошли!');
-          router.replace('/dashboard'); // Переход на главную страницу
-        } else {
-          Alert.alert('Ошибка', 'Неверный email или пароль');
-        }
-      } else {
-        Alert.alert('Ошибка', 'Пользователь не зарегистрирован');
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Ошибка', 'Что-то пошло не так');
+  const onSubmit = async (data: LoginParams) => {
+    const { data: payload } = await api.post<{
+      access_token: string;
+      refresh_token: string;
+    }>("/auth/login", data);
+
+    if (Platform.OS !== "web") {
+      await saveTokens(payload.access_token, payload.refresh_token);
+    } else {
+      window.localStorage.setItem("access_token", payload.access_token);
     }
+
+    router.replace("/dashboard");
   };
 
   return (
     <View style={styles.container}>
-      <BaseText variant="headingM" color="main" style={styles.title}>Авторизация</BaseText>
-      <BaseInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+      <BaseText variant="headingM" color="main" style={styles.title}>
+        Авторизация
+      </BaseText>
+
+      <Controller
+        control={control}
+        name="email"
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, value } }) => (
+          <BaseInput
+            style={styles.input}
+            placeholder="Email"
+            onChangeText={onChange}
+            value={value || ""}
+          />
+        )}
       />
-      <BaseInput
-        placeholder="Пароль"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
+
+      <Controller
+        control={control}
+        name="password"
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, value } }) => (
+          <BaseInput
+            style={styles.input}
+            placeholder="Пароль"
+            onChangeText={onChange}
+            value={value || ""}
+          />
+        )}
       />
-      <PrimaryButton title="Войти" onPress={handleLogin} fluid/>
-      <PrimaryButton title="Нет аккаунта? Зарегистрируйтесь" mode="transparent" variant="blue" size="small" onPress={() => router.push('/sign-up')} fluid />
+
+      <PrimaryButton title="Войти" onPress={handleSubmit(onSubmit)} fluid />
+
+      <PrimaryButton
+        title="Нет аккаунта? Зарегистрируйтесь"
+        mode="transparent"
+        variant="blue"
+        size="small"
+        onPress={() => router.push("/sign-up")}
+        fluid
+      />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
   },
   link: {
     marginTop: 20,
-    textAlign: 'center',
-    color: 'blue',
+    textAlign: "center",
+    color: "blue",
   },
 });
