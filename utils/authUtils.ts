@@ -2,8 +2,10 @@ import { AxiosError } from "axios";
 
 import { api } from "@/services/https";
 import { User } from "@/types/user/model";
-import { clearTokens, saveTokens } from "./secure";
+
 import { Platform } from "react-native";
+
+import { clearTokens, getRefreshToken, saveTokens } from "./secure";
 
 export const checkAuth = async () => {
   try {
@@ -13,11 +15,11 @@ export const checkAuth = async () => {
   } catch (error) {
     const e = error as AxiosError;
     if (e.response?.status === 401) {
-      let refreshToken = "";
+      let refreshToken: string | null = "";
 
       try {
         if (Platform.OS !== "web") {
-          refreshToken = await api.post("/auth/refresh");
+          refreshToken = await getRefreshToken();
 
           if (!refreshToken) throw new Error("No refresh token");
         }
