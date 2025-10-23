@@ -1,38 +1,39 @@
-import { SettingsIcon } from "@/components/icons/SettingsIcon";
-import { BaseInput } from "@/components/ui/BaseInput";
-import { BaseText } from "@/components/ui/BaseText";
-import { IconButton } from "@/components/ui/IconButton";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import { api } from "@/services/https";
-import { clearTokens } from "@/utils/secure";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
-  TextInput,
-  Button,
   StyleSheet,
   Alert,
   Image,
   ScrollView,
   Platform,
-} from "react-native";
-import * as Progress from "react-native-progress";
+} from 'react-native';
+import * as Progress from 'react-native-progress';
 import {
   SafeAreaView,
   useSafeAreaInsets,
-} from "react-native-safe-area-context";
+} from 'react-native-safe-area-context';
+import { format } from 'date-fns';
+
+import { SettingsIcon } from '@/components/icons/SettingsIcon';
+import { BaseInput } from '@/components/ui/BaseInput';
+import { BaseText } from '@/components/ui/BaseText';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { api } from '@/services/https';
+import { clearTokens } from '@/utils/secure';
+import { useUserStore } from '@/store/useUserStore';
 
 export default function Profile() {
+  const { user } = useUserStore();
+
   const router = useRouter();
   // Состояния для хранения данных пользователя
   const [isEditing, setIsEditing] = useState(false); // Режим редактирования
-  const [name, setName] = useState("Иван Иванов"); // ФИО
-  const [gender, setGender] = useState("Мужской"); // Пол
-  const [age, setAge] = useState("25"); // Возраст
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState('Иван Иванов'); // ФИО
+  const [gender, setGender] = useState('Мужской'); // Пол
+  const [age, setAge] = useState('25'); // Возраст
+  const [email, setEmail] = useState('');
 
   // Получаем отступы для безопасной области
   const insets = useSafeAreaInsets();
@@ -40,48 +41,30 @@ export default function Profile() {
   // Функция для сохранения изменений
   const handleSave = () => {
     if (!name || !gender || !age) {
-      Alert.alert("Ошибка", "Заполните все поля");
+      Alert.alert('Ошибка', 'Заполните все поля');
       return;
     }
     setIsEditing(false);
-    Alert.alert("Успех", "Профиль успешно обновлен");
+    Alert.alert('Успех', 'Профиль успешно обновлен');
   };
 
   const handleLogout = async () => {
     try {
-      if (Platform.OS !== "web") {
+      await api.post('/auth/logout');
+
+      if (Platform.OS !== 'web') {
         clearTokens();
       } else {
-        window.localStorage.removeItem("access_token");
+        window.localStorage.removeItem('access_token');
       }
 
-      await api.get("/auth/logout");
-
-      Alert.alert("Успех", "Вы успешно вышли из аккаунта");
-      router.replace("/sign-in"); // Переход на страницу авторизации
+      Alert.alert('Успех', 'Вы успешно вышли из аккаунта');
+      router.replace('/sign-in'); // Переход на страницу авторизации
     } catch (error) {
-      console.error("Ошибка при выходе:", error);
-      Alert.alert("Ошибка", "Что-то пошло не так");
+      console.error('Ошибка при выходе:', error);
+      Alert.alert('Ошибка', 'Что-то пошло не так');
     }
   };
-
-  useEffect(() => {
-    AsyncStorage.getItem("user")
-      .then((data) => {
-        if (data) {
-          return JSON.parse(data);
-        }
-      })
-      .then((user) => {
-        setEmail(user.email);
-        setName(user.name);
-        setAge(user.age);
-        setGender(user.gender);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
 
   return (
     <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
@@ -100,7 +83,7 @@ export default function Profile() {
           <Image
             style={styles.infoAvatar}
             resizeMode="cover"
-            source={require("@/assets/images/avatar.png")}
+            source={require('@/assets/images/avatar.png')}
           />
         </View>
         <View style={styles.infoContainer}>
@@ -108,22 +91,31 @@ export default function Profile() {
             {!isEditing ? (
               <>
                 <BaseText variant="subtitle" style={styles.infoName}>
-                  {name}
+                  {user?.name}
                 </BaseText>
+
+                <BaseText
+                  variant="body"
+                  style={styles.infoAge}
+                  color="secondary"
+                >
+                  {user?.age}
+                </BaseText>
+
                 <BaseText
                   variant="body"
                   style={styles.infoEmail}
                   color="secondary"
                 >
-                  {email}
+                  {user?.email}
                 </BaseText>
-                {/* <BaseText variant='body' style={styles.infoAge} color='secondary'>{age}</BaseText> */}
                 <BaseText
                   variant="caption"
                   style={styles.infoDate}
                   color="secondary"
                 >
-                  Регистрация: апрель 2025
+                  Регистрация:{' '}
+                  {format(user?.createdAt || new Date(), 'MMMM dd')}
                 </BaseText>
                 <BaseText variant="bodyBold" style={styles.infoFriends}>
                   0 друзей
@@ -188,7 +180,7 @@ export default function Profile() {
                     <Image
                       style={styles.statsImage}
                       resizeMode="contain"
-                      source={require("@/assets/images/icons/hexagon.svg")}
+                      source={require('@/assets/images/icons/hexagon.svg')}
                     />
                     <View style={styles.statsBody}>
                       <View style={styles.statsTitle}>
@@ -207,7 +199,7 @@ export default function Profile() {
                     <Image
                       style={styles.statsImage}
                       resizeMode="contain"
-                      source={require("@/assets/images/icons/heart.svg")}
+                      source={require('@/assets/images/icons/heart.svg')}
                     />
                     <View style={styles.statsBody}>
                       <View style={styles.statsTitle}>
@@ -226,7 +218,7 @@ export default function Profile() {
                     <Image
                       style={styles.statsImage}
                       resizeMode="contain"
-                      source={require("@/assets/images/icons/clock.svg")}
+                      source={require('@/assets/images/icons/clock.svg')}
                     />
                     <View style={styles.statsBody}>
                       <View style={styles.statsTitle}>
@@ -245,7 +237,7 @@ export default function Profile() {
                     <Image
                       style={styles.statsImage}
                       resizeMode="contain"
-                      source={require("@/assets/images/icons/lightning.svg")}
+                      source={require('@/assets/images/icons/lightning.svg')}
                     />
                     <View style={styles.statsBody}>
                       <View style={styles.statsTitle}>
@@ -274,7 +266,7 @@ export default function Profile() {
               <Image
                 style={styles.friendsBg}
                 resizeMode="contain"
-                source={require("@/assets/images/friends.svg")}
+                source={require('@/assets/images/friends.svg')}
               />
               <BaseText
                 style={styles.friendsDesc}
@@ -290,7 +282,7 @@ export default function Profile() {
                 <View style={styles.invite}>
                   <Image
                     style={styles.inviteImage}
-                    source={require("@/assets/images/owl.svg")}
+                    source={require('@/assets/images/owl.svg')}
                   />
                   <View style={styles.inviteBody}>
                     <View style={styles.inviteTitle}>
@@ -331,7 +323,7 @@ export default function Profile() {
             <View style={styles.achivementsListItem}>
               <View style={styles.achivementImage}>
                 <Image
-                  source={require("@/assets/images/achivements/enthusiast.svg")}
+                  source={require('@/assets/images/achivements/enthusiast.svg')}
                   style={styles.flag}
                 />
               </View>
@@ -368,7 +360,7 @@ export default function Profile() {
             <View style={styles.achivementsListItem}>
               <View style={styles.achivementImage}>
                 <Image
-                  source={require("@/assets/images/achivements/sage.svg")}
+                  source={require('@/assets/images/achivements/sage.svg')}
                   style={styles.flag}
                 />
               </View>
@@ -410,7 +402,7 @@ export default function Profile() {
             >
               <View style={styles.achivementImage}>
                 <Image
-                  source={require("@/assets/images/achivements/erudite.svg")}
+                  source={require('@/assets/images/achivements/erudite.svg')}
                   style={styles.flag}
                 />
               </View>
@@ -463,92 +455,93 @@ export default function Profile() {
 // Стили
 const styles = StyleSheet.create({
   header: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomColor: "#ccc",
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomColor: '#ccc',
     borderBottomWidth: 2,
     padding: 10,
-    flexWrap: "nowrap",
-    flexDirection: "row",
+    flexWrap: 'nowrap',
+    flexDirection: 'row',
     marginBottom: 20,
   },
 
   title: {
-    alignSelf: "center",
-    alignContent: "center",
-    fontWeight: "bold",
-    color: "#ccc",
+    alignSelf: 'center',
+    alignContent: 'center',
+    fontWeight: 'bold',
+    color: '#ccc',
   },
 
   infoContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
 
   infoBody: {
-    flexDirection: "column",
+    flexDirection: 'column',
     gap: 2,
   },
 
   infoName: {
-    fontWeight: "bold",
-    textTransform: "capitalize",
+    fontWeight: 'bold',
+    textTransform: 'capitalize',
+    width: 'auto',
   },
 
-  infoAge: {},
+  infoAge: { width: 'auto' },
 
   infoEmail: {},
 
   infoDate: {},
 
   infoFriends: {
-    color: " rgb(33, 150, 243)",
+    color: ' rgb(33, 150, 243)',
   },
 
   infoFlag: {
-    alignContent: "center",
+    alignContent: 'center',
   },
 
   infoAvatarContainer: {
-    width: "100%",
+    width: '100%',
     height: 250,
     borderRadius: 16,
-    overflow: "hidden", // важно — чтобы скругление применялось ко всей картинке
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f0f0f0", // опционально: фон на случай, если изображение не загрузилось
+    overflow: 'hidden', // важно — чтобы скругление применялось ко всей картинке
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0', // опционально: фон на случай, если изображение не загрузилось
     marginBottom: 20,
   },
   infoAvatar: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 16,
-    resizeMode: "cover",
+    resizeMode: 'cover',
   },
 
   friends: {},
   friendsBg: {
-    width: "100%",
+    width: '100%',
   },
   friendsDesc: {
-    textAlign: "center",
-    width: "100%",
+    textAlign: 'center',
+    width: '100%',
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   statsGrid: {
-    flexDirection: "row",
-    gap: "16px",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    gap: '16px',
+    flexWrap: 'wrap',
   },
   statsGridItem: {
-    flexBasis: "47%",
+    flexBasis: '47%',
     flexGrow: 0,
     flexShrink: 0,
   },
   stats: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 8,
-    alignItems: "flex-start",
+    alignItems: 'flex-start',
   },
   statsImage: {
     width: 16,
@@ -556,25 +549,25 @@ const styles = StyleSheet.create({
   },
   statsBody: {},
   statsTitle: {
-    alignItems: "flex-start",
+    alignItems: 'flex-start',
     top: -2,
   },
   statsDesc: {},
   box: {
     padding: 16,
     borderRadius: 16,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderWidth: 2,
     flex: 1,
   },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   label: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginTop: 10,
   },
   info: {
@@ -582,16 +575,16 @@ const styles = StyleSheet.create({
     marginTop: 5,
     padding: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 5,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: '#f9f9f9',
   },
   input: {
     fontSize: 16,
     marginTop: 5,
     padding: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 5,
   },
   buttonContainer: {
@@ -599,11 +592,11 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   primaryButton: {
-    backgroundColor: "#6CD96C", // Ярко-зеленый цвет
+    backgroundColor: '#6CD96C', // Ярко-зеленый цвет
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25, // Закругленные углы
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -612,16 +605,16 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#fff",
-    textAlign: "center",
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
   },
   secondaryButton: {
-    backgroundColor: "#FFC107", // Ярко-желтый цвет
+    backgroundColor: '#FFC107', // Ярко-желтый цвет
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -630,18 +623,18 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#000",
-    textAlign: "center",
+    fontWeight: 'bold',
+    color: '#000',
+    textAlign: 'center',
   },
   iconButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FF4D4D", // Ярко-красный цвет
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF4D4D', // Ярко-красный цвет
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 25,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -649,8 +642,8 @@ const styles = StyleSheet.create({
   },
   iconButtonText: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#fff",
+    fontWeight: 'bold',
+    color: '#fff',
     marginLeft: 10,
   },
   avatar: {
@@ -659,7 +652,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   section: {
-    flexDirection: "column",
+    flexDirection: 'column',
     marginBottom: 20,
   },
   sectionTitle: {
@@ -670,14 +663,14 @@ const styles = StyleSheet.create({
     gap: 10,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: "#ccc",
-    width: "100%",
+    borderColor: '#ccc',
+    width: '100%',
   },
   achivementsListItem: {
-    flexDirection: "row",
-    borderBottomColor: "#ccc",
+    flexDirection: 'row',
+    borderBottomColor: '#ccc',
     borderBottomWidth: 2,
-    width: "100%",
+    width: '100%',
   },
   achivementsListItemLast: {
     borderBottomWidth: 0,
@@ -689,17 +682,17 @@ const styles = StyleSheet.create({
   achivementBody: {
     padding: 20,
     flex: 1,
-    boxSizing: "border-box",
-    flexDirection: "column",
-    alignItems: "flex-start",
+    boxSizing: 'border-box',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     gap: 10,
-    width: "100%",
+    width: '100%',
   },
   achivementHeader: {
     flex: 1,
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 
   inviteContainer: {
@@ -708,7 +701,7 @@ const styles = StyleSheet.create({
   },
 
   invite: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
   },
   inviteImage: {
@@ -717,10 +710,10 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   inviteBody: {
-    flexDirection: "column",
+    flexDirection: 'column',
     gap: 12,
     flex: 1,
-    width: "100%",
+    width: '100%',
   },
   inviteTitle: {
     fontSize: 24,
@@ -728,7 +721,7 @@ const styles = StyleSheet.create({
 
   inviteDescription: {
     flex: 1,
-    width: "100%",
+    width: '100%',
   },
 
   inviteButtonContainer: {},

@@ -1,9 +1,8 @@
 import { AxiosError } from "axios";
+import { Platform } from "react-native";
 
 import { api } from "@/services/https";
 import { User } from "@/types/user/model";
-
-import { Platform } from "react-native";
 
 import { clearTokens, getRefreshToken, saveTokens } from "./secure";
 
@@ -22,6 +21,8 @@ export const checkAuth = async () => {
           refreshToken = await getRefreshToken();
 
           if (!refreshToken) throw new Error("No refresh token");
+        } else {
+          refreshToken = window.localStorage.getItem("refresh_token");
         }
 
         const refreshRes = await api.post("/auth/refresh", { refreshToken });
@@ -29,6 +30,9 @@ export const checkAuth = async () => {
 
         if (Platform.OS !== "web") {
           saveTokens(access_token, refresh_token);
+        } else {
+          window.localStorage.setItem("access_token", access_token);
+          window.localStorage.setItem("refresh_token", refresh_token);
         }
 
         const { data } = await api.get<User>("/auth/profile");
@@ -36,6 +40,7 @@ export const checkAuth = async () => {
         return !!data.email;
       } catch (refreshError) {
         console.error("Ошибка при обновлении токена:", refreshError);
+
         if (Platform.OS !== "web") {
           clearTokens();
         }

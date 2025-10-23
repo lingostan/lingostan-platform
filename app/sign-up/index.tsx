@@ -1,19 +1,21 @@
-import { useRouter } from "expo-router";
-import React from "react";
-import { useForm, Controller } from "react-hook-form";
-import { View, StyleSheet } from "react-native";
-import { Platform } from "react-native";
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { View, StyleSheet } from 'react-native';
+import { Platform } from 'react-native';
 
-import { BaseInput } from "@/components/ui/BaseInput";
-import { BasePicker } from "@/components/ui/BasePicker";
-import { BaseText } from "@/components/ui/BaseText";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import { api } from "@/services/https";
-import { RegistraionParams } from "@/types/auth/model";
-import { saveTokens } from "@/utils/secure";
+import { BaseInput } from '@/components/ui/BaseInput';
+import { BasePicker } from '@/components/ui/BasePicker';
+import { BaseText } from '@/components/ui/BaseText';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { api } from '@/services/https';
+import { RegistraionParams } from '@/types/auth/model';
+import { saveTokens } from '@/utils/secure';
 
 export default function SignUp() {
-  const { control, handleSubmit } = useForm<RegistraionParams>();
+  const { control, handleSubmit } = useForm<RegistraionParams>({
+    defaultValues: { sex: 'male' },
+  });
 
   const router = useRouter();
 
@@ -21,15 +23,15 @@ export default function SignUp() {
     const { data: payload } = await api.post<{
       access_token: string;
       refresh_token: string;
-    }>("/auth/register", data);
+    }>('/auth/register', data);
 
-    if (Platform.OS !== "web") {
+    if (Platform.OS !== 'web') {
       await saveTokens(payload.access_token, payload.refresh_token);
     } else {
-      window.localStorage.setItem("access_token", payload.access_token);
+      window.localStorage.setItem('access_token', payload.access_token);
     }
 
-    router.replace("/sign-in");
+    router.replace('/sign-in');
   };
 
   return (
@@ -49,7 +51,7 @@ export default function SignUp() {
             style={styles.input}
             placeholder="Имя"
             onChangeText={onChange}
-            value={value || ""}
+            value={value || ''}
           />
         )}
       />
@@ -66,8 +68,8 @@ export default function SignUp() {
               selectedValue={value}
               onValueChange={(itemValue) => onChange(itemValue)}
               items={[
-                { label: "Мужской", value: "male" },
-                { label: "Женский", value: "female" },
+                { label: 'Мужской', value: 'male' },
+                { label: 'Женский', value: 'female' },
               ]}
               placeholder="Выберите пол"
             />
@@ -86,7 +88,7 @@ export default function SignUp() {
             style={styles.input}
             placeholder="Возраст"
             onChangeText={onChange}
-            value={String(value || "")}
+            value={String(value || '')}
             keyboardType="phone-pad"
           />
         )}
@@ -99,7 +101,7 @@ export default function SignUp() {
           required: true,
           pattern: {
             value: /\S+@\S+\.\S+/,
-            message: "Неверный email",
+            message: 'Неверный email',
           },
         }}
         render={({ field: { onChange, value } }) => (
@@ -107,7 +109,7 @@ export default function SignUp() {
             style={styles.input}
             placeholder="Email"
             onChangeText={onChange}
-            value={value || ""}
+            value={value || ''}
           />
         )}
       />
@@ -123,7 +125,7 @@ export default function SignUp() {
             style={styles.input}
             placeholder="Пароль"
             onChangeText={onChange}
-            value={value || ""}
+            value={value || ''}
             secureTextEntry
           />
         )}
@@ -141,7 +143,7 @@ export default function SignUp() {
         title="Уже есть аккаунт? Войдите"
         mode="transparent"
         variant="blue"
-        onPress={() => router.push("/sign-in")}
+        onPress={() => router.push('/sign-in')}
       />
     </View>
   );
@@ -151,19 +153,19 @@ export default function SignUp() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 20,
-    textAlign: "center",
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
@@ -177,11 +179,11 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: "100%",
+    width: '100%',
   },
   link: {
     marginTop: 20,
-    textAlign: "center",
-    color: "blue",
+    textAlign: 'center',
+    color: 'blue',
   },
 });
