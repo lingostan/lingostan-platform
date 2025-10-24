@@ -6,4 +6,6 @@ export type User = {
   languages: UserLang[];
   createdAt: Date;
   age: number;
+  id: string;
+  avatar: string;
 };

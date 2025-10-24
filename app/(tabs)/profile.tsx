@@ -23,6 +23,7 @@ import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { api } from '@/services/https';
 import { clearTokens } from '@/utils/secure';
 import { useUserStore } from '@/store/useUserStore';
+import AvatarUploader from '@/components/AvatarUploader';
 
 export default function Profile() {
   const { user } = useUserStore();
@@ -66,6 +67,22 @@ export default function Profile() {
     }
   };
 
+  const handleImageSelect = async (uri: string, type: string, ext: string) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+
+    const formData = new FormData();
+    formData.append('file', blob, `${user?.id}.${ext}`);
+
+    const { data } = await api.post('/files/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    await api.put(`/users/${user?.id}`, { avatar: data.url });
+  };
+
   return (
     <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView
@@ -79,13 +96,11 @@ export default function Profile() {
           <SettingsIcon />
         </View>
 
-        <View style={styles.infoAvatarContainer}>
-          <Image
-            style={styles.infoAvatar}
-            resizeMode="cover"
-            source={require('@/assets/images/avatar.png')}
-          />
-        </View>
+        <AvatarUploader
+          onImageSelect={handleImageSelect}
+          initialImageUri={process.env.EXPO_PUBLIC_BASE_URL! + user?.avatar}
+        />
+
         <View style={styles.infoContainer}>
           <View style={styles.infoBody}>
             {!isEditing ? (
