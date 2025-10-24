@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import AlphabetGrid from '@/components/AlphabetGrid';
 import { BaseText } from '@/components/ui/BaseText';
 import * as Progress from 'react-native-progress';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUserStore } from '@/store/useUserStore';
 
 export default function AlphabetQuiz() {
@@ -17,8 +17,12 @@ export default function AlphabetQuiz() {
   const [progress, setProgress] = useState(0);
   const [counter, setCounter] = useState({ total: 0, progress: 0 });
 
-  console.log('progress', progress);
-  console.log(activeLang);
+  useEffect(() => {
+    if (activeLang?.code) {
+      setProgress(0);
+    }
+  }, [activeLang]);
+
   return (
     <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>

@@ -51,8 +51,9 @@ export default function AlphabetGrid(props: Props) {
     setIsPlaying(true);
 
     try {
-      console.log(audioUrl);
-      const { sound } = await Audio.Sound.createAsync(audioUrl);
+      const { sound } = await Audio.Sound.createAsync(
+        process.env.EXPO_PUBLIC_BASE_URL + audioUrl
+      );
       setSound(sound);
 
       sound.setOnPlaybackStatusUpdate((status) => {
