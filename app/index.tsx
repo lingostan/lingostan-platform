@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   ImageBackground,
   StyleSheet,
   ActivityIndicator,
-} from "react-native";
-import * as Progress from "react-native-progress"; // Импортируем компонент прогресса
-import { useRouter } from "expo-router";
+} from 'react-native';
+import * as Progress from 'react-native-progress'; // Импортируем компонент прогресса
+import { useRouter } from 'expo-router';
 
 const SplashScreen = () => {
   const router = useRouter();
@@ -22,7 +22,7 @@ const SplashScreen = () => {
       if (progressValue >= 1) {
         clearInterval(interval); // Останавливаем интервал при достижении 100%
         setTimeout(() => {
-          router.replace("/dashboard"); // Переход на главную страницу после завершения
+          router.replace('/dashboard'); // Переход на главную страницу после завершения
         }, 500); // Добавляем задержку в 0.5 секунды перед переходом
       }
     }, 300);
@@ -32,7 +32,7 @@ const SplashScreen = () => {
 
   return (
     <ImageBackground
-      source={require("@/assets/images/bg.jpg")} // Укажите путь к вашему фоновому изображению
+      source={require('@/assets/images/bg.jpg')} // Укажите путь к вашему фоновому изображению
       style={styles.container}
     >
       {/* Текст с названием приложения */}
@@ -55,7 +55,7 @@ const SplashScreen = () => {
 // Стили
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
@@ -65,15 +65,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
-    color: "#fff",
+    fontWeight: 'bold',
+    color: '#fff',
     marginBottom: 20,
   },
   progress: {
     borderRadius: 20,
-    overflow: "hidden",
+    overflow: 'hidden',
     marginTop: 20,
-    width: "100%", // Полоса занимает 80% ширины экрана
+    width: '100%', // Полоса занимает 80% ширины экрана
   },
 });
 

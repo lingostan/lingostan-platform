@@ -20,7 +20,12 @@ interface TextProps {
   style?: TextStyle;
 }
 
-export const BaseText: React.FC<TextProps> = ({ variant = 'body', color = 'main', children, style }) => {
+export const BaseText: React.FC<TextProps> = ({
+  variant = 'body',
+  color = 'main',
+  children,
+  style,
+}) => {
   const getFontSize = () => {
     switch (variant) {
       case 'displayXL':

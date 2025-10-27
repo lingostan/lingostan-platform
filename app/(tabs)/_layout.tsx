@@ -8,6 +8,7 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import AuthGuard from '@/components/AuthGuard';
+import '../../global.css';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -27,33 +28,42 @@ export default function TabLayout() {
             },
             default: {},
           }),
-        }}>
+        }}
+      >
         <Tabs.Screen
           name="dashboard"
           options={{
             title: 'Главная',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={28} name="house.fill" color={color} />
+            ),
           }}
         />
         <Tabs.Screen
           name="alphabet"
           options={{
             title: 'Словарь',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.fill" color={color} />,
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={28} name="book.fill" color={color} />
+            ),
           }}
         />
         <Tabs.Screen
           name="statistics"
           options={{
             title: 'Статистика',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={28} name="chart.bar.fill" color={color} />
+            ),
           }}
         />
         <Tabs.Screen
           name="profile"
           options={{
             title: 'Профиль',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={28} name="person.fill" color={color} />
+            ),
           }}
         />
         <Tabs.Screen
