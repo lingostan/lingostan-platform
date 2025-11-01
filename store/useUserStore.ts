@@ -50,7 +50,7 @@ export const useUserStore = create<Usertate>((set) => ({
     set({ isLoading: true });
 
     try {
-      const { data } = await api.get<User>('/auth/profile');
+      const { data } = await api.get<User>('/users/profile');
       set({
         isAuthenticated: true,
         user: data,
@@ -81,7 +81,7 @@ export const useUserStore = create<Usertate>((set) => ({
             window.localStorage.setItem('refresh_token', refresh_token);
           }
 
-          const { data } = await api.get<User>('/auth/profile');
+          const { data } = await api.get<User>('/users/profile');
 
           set({
             isAuthenticated: true,

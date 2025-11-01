@@ -33,7 +33,7 @@ export default function SignIn() {
       window.localStorage.setItem('refresh_token', payload.refresh_token);
     }
 
-    const { data: user } = await api.get<User>('/auth/profile');
+    const { data: user } = await api.get<User>('/users/profile');
 
     setLoading(false);
 

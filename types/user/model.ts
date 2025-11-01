@@ -7,5 +7,5 @@ export type User = {
   createdAt: Date;
   age: number;
   id: string;
-  avatar: string;
+  avatarUrl: string;
 };

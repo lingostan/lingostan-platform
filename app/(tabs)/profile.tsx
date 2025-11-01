@@ -80,7 +80,7 @@ export default function Profile() {
       },
     });
 
-    await api.put(`/users/${user?.id}`, { avatar: data.url });
+    await api.put(`/users/${user?.id}`, { avatarUrl: data.url });
   };
 
   return (
@@ -98,7 +98,7 @@ export default function Profile() {
 
         <AvatarUploader
           onImageSelect={handleImageSelect}
-          initialImageUri={process.env.EXPO_PUBLIC_BASE_URL! + user?.avatar}
+          initialImageUri={process.env.EXPO_PUBLIC_BASE_URL! + user?.avatarUrl}
         />
 
         <View style={styles.infoContainer}>

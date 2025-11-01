@@ -1,5 +1,5 @@
 export type Lang = {
-  id: string;
+  id: number;
   code: string;
   name: string;
   alphabet: AlphabetItem[];

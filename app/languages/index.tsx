@@ -17,10 +17,10 @@ export default function Languages() {
   const { setData, data } = useLangStore();
   const { setActiveLang } = useUserStore();
 
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const toggleLanguage = (id: string) => {
+  const toggleLanguage = (id: number) => {
     setSelectedLanguages((prev) =>
       prev.includes(id) ? prev.filter((langId) => langId !== id) : [...prev, id]
     );
@@ -36,8 +36,8 @@ export default function Languages() {
     try {
       setIsLoading(true);
 
-      const promises = selectedLanguages.map((code) =>
-        api.post<UserLang>('/languages/start', { code })
+      const promises = selectedLanguages.map((id) =>
+        api.post<UserLang>(`/languages/${id}/start`)
       );
 
       const [{ data }] = await Promise.all(promises);
@@ -57,12 +57,12 @@ export default function Languages() {
   }, []);
 
   const renderLanguage = ({ item }: { item: Lang }) => {
-    const isChecked = selectedLanguages.includes(item.code);
+    const isChecked = selectedLanguages.includes(item.id);
 
     return (
       <TouchableOpacity
         style={styles.languageItem}
-        onPress={() => toggleLanguage(item.code)} // ← обработчик на всю строку
+        onPress={() => toggleLanguage(item.id)} // ← обработчик на всю строку
         activeOpacity={0.7}
       >
         <Checkbox
