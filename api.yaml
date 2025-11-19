@@ -1,0 +1,532 @@
+openapi: 3.0.3
+info:
+  title: LingoStan API
+  description: API для работы с модулями, уроками и упражнениями
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@lingostan.com
+
+servers:
+  - url: https://api.lingostan.com/v1
+    description: Production server
+  - url: https://staging-api.lingostan.com/v1
+    description: Staging server
+
+paths:
+  /modules:
+    get:
+      operationId: listModules
+      summary: Получить список всех модулей
+      description: Возвращает список всех доступных модулей с их базовой информацией
+      tags:
+        - Modules
+      responses:
+        '200':
+          description: Успешный ответ со списком модулей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModulesListResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /modules/{moduleId}:
+    get:
+      operationId: getModuleById
+      summary: Получить конкретный модуль
+      description: Возвращает детальную информацию о модуле по его идентификатору
+      tags:
+        - Modules
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          description: Идентификатор модуля
+          schema:
+            type: string
+            example: "module-1"
+      responses:
+        '200':
+          description: Успешный ответ с информацией о модуле
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /modules/{moduleId}/lessons:
+    get:
+      operationId: getModuleLessons
+      summary: Получить список уроков в модуле
+      description: Возвращает список всех уроков, принадлежащих указанному модулю
+      tags:
+        - Lessons
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          description: Идентификатор модуля
+          schema:
+            type: string
+            example: "module-1"
+      responses:
+        '200':
+          description: Успешный ответ со списком уроков
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonsListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /modules/{moduleId}/lessons/{lessonId}/exercises:
+    get:
+      operationId: getLessonExercises
+      summary: Получить список упражнений в уроке
+      description: Возвращает список всех упражнений (вопросов) для указанного урока в модуле
+      tags:
+        - Exercises
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          description: Идентификатор модуля
+          schema:
+            type: string
+            example: "module-1"
+        - name: lessonId
+          in: path
+          required: true
+          description: Идентификатор урока
+          schema:
+            type: string
+            example: "lesson-1"
+      responses:
+        '200':
+          description: Успешный ответ со списком упражнений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExercisesListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Module:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - lessons
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор модуля
+          example: "module-1"
+        title:
+          type: string
+          description: Название модуля
+          example: "Модуль 1. Базовые слова"
+        description:
+          type: string
+          description: Описание модуля
+          example: "Изучаем основы лакского алфавита"
+        lessons:
+          type: array
+          description: Список уроков в модуле
+          items:
+            $ref: '#/components/schemas/LessonSummary'
+
+    LessonSummary:
+      type: object
+      required:
+        - id
+        - title
+        - summary
+        - completed
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор урока
+          example: "lesson-1"
+        title:
+          type: string
+          description: Название урока
+          example: "1 урок (а,аь,и,е,й)"
+        summary:
+          type: string
+          description: Краткое описание урока
+          example: "Познакомься с первыми буквами алфавита"
+        completed:
+          type: boolean
+          description: Статус завершения урока
+          example: false
+
+    Lesson:
+      type: object
+      required:
+        - id
+        - title
+        - questions
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор урока
+          example: "lesson-1"
+        title:
+          type: string
+          description: Название урока
+          example: "1 урок (а,аь,и,е,й)"
+        questions:
+          type: array
+          description: Список вопросов (упражнений) в уроке
+          items:
+            $ref: '#/components/schemas/Exercise'
+
+    Exercise:
+      oneOf:
+        - $ref: '#/components/schemas/LetterIntroExercise'
+        - $ref: '#/components/schemas/SelectWordExercise'
+        - $ref: '#/components/schemas/SelectImageExercise'
+        - $ref: '#/components/schemas/MatchPairsExercise'
+        - $ref: '#/components/schemas/MatchAudioExercise'
+      discriminator:
+        propertyName: type
+        mapping:
+          letterIntro: '#/components/schemas/LetterIntroExercise'
+          selectWord: '#/components/schemas/SelectWordExercise'
+          selectImage: '#/components/schemas/SelectImageExercise'
+          matchPairs: '#/components/schemas/MatchPairsExercise'
+          matchAudio: '#/components/schemas/MatchAudioExercise'
+
+    LetterIntroExercise:
+      type: object
+      required:
+        - id
+        - type
+        - letter
+        - letterAudio
+        - image
+        - options
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор упражнения
+          example: "q1"
+        type:
+          type: string
+          enum: [letterIntro]
+          example: "letterIntro"
+        letter:
+          type: string
+          description: Буква для изучения
+          example: "Аь"
+        letterAudio:
+          type: string
+          description: Идентификатор аудио файла буквы
+          example: "audio-letter-a"
+        image:
+          type: string
+          description: Идентификатор изображения
+          example: "image-letter-a"
+        options:
+          type: array
+          description: Варианты ответов
+          items:
+            $ref: '#/components/schemas/LetterIntroOption'
+
+    LetterIntroOption:
+      type: object
+      required:
+        - id
+        - label
+        - isCorrect
+      properties:
+        id:
+          type: string
+          example: "q1o1"
+        label:
+          type: string
+          example: "Аь"
+        isCorrect:
+          type: boolean
+          example: true
+
+    SelectWordExercise:
+      type: object
+      required:
+        - id
+        - type
+        - letter
+        - letterAudio
+        - options
+      properties:
+        id:
+          type: string
+          example: "q4"
+        type:
+          type: string
+          enum: [selectWord]
+          example: "selectWord"
+        letter:
+          type: string
+          example: "Аь"
+        letterAudio:
+          type: string
+          example: "audio-letter-a"
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectWordOption'
+
+    SelectWordOption:
+      type: object
+      required:
+        - id
+        - label
+        - audio
+        - isCorrect
+      properties:
+        id:
+          type: string
+          example: "q4o1"
+        label:
+          type: string
+          example: "Аьрхъ"
+        audio:
+          type: string
+          example: "audio-word-arh"
+        isCorrect:
+          type: boolean
+          example: true
+
+    SelectImageExercise:
+      type: object
+      required:
+        - id
+        - type
+        - letter
+        - letterAudio
+        - options
+      properties:
+        id:
+          type: string
+          example: "q7"
+        type:
+          type: string
+          enum: [selectImage]
+          example: "selectImage"
+        letter:
+          type: string
+          example: "Аь"
+        letterAudio:
+          type: string
+          example: "audio-letter-a"
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectImageOption'
+
+    SelectImageOption:
+      type: object
+      required:
+        - id
+        - image
+        - audio
+        - isCorrect
+      properties:
+        id:
+          type: string
+          example: "q7o1"
+        image:
+          type: string
+          example: "image-apple"
+        audio:
+          type: string
+          example: "audio-word-arh"
+        isCorrect:
+          type: boolean
+          example: true
+
+    MatchPairsExercise:
+      type: object
+      required:
+        - id
+        - type
+        - title
+        - pairs
+      properties:
+        id:
+          type: string
+          example: "q9"
+        type:
+          type: string
+          enum: [matchPairs]
+          example: "matchPairs"
+        title:
+          type: string
+          example: "Найди пары: буква и слово"
+        pairs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pair'
+
+    Pair:
+      type: object
+      required:
+        - left
+        - right
+      properties:
+        left:
+          type: string
+          example: "Аь"
+        right:
+          type: string
+          example: "Аьрхъ"
+
+    MatchAudioExercise:
+      type: object
+      required:
+        - id
+        - type
+        - title
+        - audioOptions
+        - letterOptions
+        - matches
+      properties:
+        id:
+          type: string
+          example: "q11"
+        type:
+          type: string
+          enum: [matchAudio]
+          example: "matchAudio"
+        title:
+          type: string
+          example: "Сопоставь звук и букву"
+        audioOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AudioOption'
+        letterOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LetterOption'
+        matches:
+          type: object
+          description: Маппинг правильных соответствий (audioOptionId -> letterOptionId)
+          additionalProperties:
+            type: string
+          example:
+            q11a1: "q11l1"
+            q11a2: "q11l2"
+
+    AudioOption:
+      type: object
+      required:
+        - id
+        - audio
+      properties:
+        id:
+          type: string
+          example: "q11a1"
+        audio:
+          type: string
+          example: "audio-letter-a"
+
+    LetterOption:
+      type: object
+      required:
+        - id
+        - letter
+      properties:
+        id:
+          type: string
+          example: "q11l1"
+        letter:
+          type: string
+          example: "Аь"
+
+    ModulesListResponse:
+      type: object
+      required:
+        - modules
+      properties:
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Module'
+
+    LessonsListResponse:
+      type: object
+      required:
+        - lessons
+      properties:
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/LessonSummary'
+
+    ExercisesListResponse:
+      type: object
+      required:
+        - exercises
+      properties:
+        exercises:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exercise'
+
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Сообщение об ошибке
+          example: "Модуль не найден"
+        code:
+          type: string
+          description: Код ошибки
+          example: "MODULE_NOT_FOUND"
+
+  responses:
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: "Ресурс не найден"
+            code: "NOT_FOUND"
+
+    InternalServerError:
+      description: Внутренняя ошибка сервера
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: "Внутренняя ошибка сервера"
+            code: "INTERNAL_SERVER_ERROR"
+
+tags:
+  - name: Modules
+    description: Операции с модулями
+  - name: Lessons
+    description: Операции с уроками
+  - name: Exercises
+    description: Операции с упражнениями
+

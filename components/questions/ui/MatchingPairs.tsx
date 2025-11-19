@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { BaseText } from './BaseText';
-import { PrimaryButton } from './PrimaryButton';
+import { BaseText } from '@/components/ui/BaseText';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 
 type Pair = { left: string; right: string };
 

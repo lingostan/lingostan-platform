@@ -1,5 +1,5 @@
-import React from 'react';
-import { SafeAreaView, View, Text, FlatList, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { SafeAreaView, View, StyleSheet, ScrollView } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -9,22 +9,68 @@ import { BaseCaption } from '@/components/ui/BaseCaption';
 import { BookIcon } from '@/components/icons/BookIcon';
 import { BaseText } from '@/components/ui/BaseText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ModuleOverview } from '@/components/dashboard/ModuleOverview';
+import { useListModules } from '@/api/generated/lingoStanAPI';
+import type { Module } from '@/api/generated/models';
+import { subscribeToProgress, applyProgressToModule, getLessonProgress } from '@/utils/progressStore';
 
 export default function Dashboard() {
   const insets = useSafeAreaInsets();
+  const [modules, setModules] = useState<Module[]>([]);
+  
+  const { data: modulesResponse, isLoading: isLoadingModules, error: modulesError } = useListModules();
 
-  const steps = [
-    { id: 0, title: 'Модуль 0: Алфавит', completed: true },
-    { id: 1, title: 'Модуль 1: Базовые слова', completed: false },
-    { id: 2, title: 'Модуль 2: Практикуем предложения', completed: false },
-  ];
+  useEffect(() => {
+    if (modulesResponse?.data?.modules) {
+      getLessonProgress().then(progress => {
+        const modulesWithProgress = modulesResponse.data.modules.map((module: Module) =>
+          applyProgressToModule(module, progress)
+        );
+        setModules(modulesWithProgress);
+      });
+    }
+  }, [modulesResponse]);
 
-  const renderStep = ({ item }: { item: { id: number; title: string; completed: boolean } }) => (
-    <View style={styles.step}>
-      <BaseText variant="body" style={styles.stepTitle}>{item.title}</BaseText>
-      {item.completed && <AntDesign name="checkcircle" size={20} color="#6CD96C" />}
-    </View>
-  );
+  useEffect(() => {
+    const unsubscribe = subscribeToProgress(progress => {
+      if (modulesResponse?.data?.modules) {
+        const modulesWithProgress = modulesResponse.data.modules.map((module: Module) =>
+          applyProgressToModule(module, progress)
+        );
+        setModules(modulesWithProgress);
+      }
+    });
+
+    return unsubscribe;
+  }, [modulesResponse]);
+
+  const { progress, completedLessons, totalLessons } = useMemo(() => {
+    const totals = modules.reduce(
+      (acc, module) => {
+        const completed = module.lessons.filter(lesson => lesson.completed).length;
+        const total = module.lessons.length;
+        return {
+          completed: acc.completed + completed,
+          total: acc.total + total,
+        };
+      },
+      { completed: 0, total: 0 },
+    );
+
+    return {
+      progress: totals.total > 0 ? totals.completed / totals.total : 0,
+      completedLessons: totals.completed,
+      totalLessons: totals.total,
+    };
+  }, [modules]);
+
+  const handleLessonPress = (moduleId: string, lessonId: string) => {
+    router.push({
+      pathname: '/alphabet/lesson',
+      params: { moduleId, lessonId },
+    });
+  };
 
   return (
     <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
@@ -37,14 +83,18 @@ export default function Dashboard() {
           <View style={styles.progressContainer}>
             <BaseText variant="subtitle" style={styles.progressLabel}>Прогресс курса</BaseText>
             <Progress.Bar 
-              progress={0.5} 
+              progress={progress} 
               width={null} 
               height={12} 
               color="#6CD96C" 
               unfilledColor="#E0E0E0" 
               borderColor="transparent" 
             />
-            <BaseText variant="caption" style={styles.progressText}>50% завершено</BaseText>
+            <BaseText variant="caption" style={styles.progressText}>
+              {totalLessons > 0
+                ? `${Math.round(progress * 100)}% завершено (${completedLessons}/${totalLessons})`
+                : 'Начните первый урок'}
+            </BaseText>
           </View>
           <View style={styles.pointsContainer}>
             <AntDesign name="heart" size={24} color="#FF4D4D" />
@@ -60,13 +110,23 @@ export default function Dashboard() {
         {/* Modules List */}
         <View style={styles.section}>
           <BaseText variant="headingM" style={styles.sectionTitle}>Модули курса</BaseText>
-          <FlatList
-            data={steps}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderStep}
-            scrollEnabled={false}
-            contentContainerStyle={styles.listContainer}
-          />
+          <View style={styles.modulesContainer}>
+            {isLoadingModules ? (
+              <LoadingSpinner />
+            ) : modulesError ? (
+              <BaseText variant="bodyBold" color="red">
+                {'Не удалось загрузить список модулей'}
+              </BaseText>
+            ) : (
+              modules.map(module => (
+                <ModuleOverview
+                  key={module.id}
+                  module={module}
+                  onLessonPress={handleLessonPress}
+                />
+              ))
+            )}
+          </View>
         </View>
 
         {/* Quiz Section */}
@@ -152,22 +212,8 @@ const styles = StyleSheet.create({
   module: {
     marginBottom: 20,
   },
-  listContainer: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 16,
-  },
-  step: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-  },
-  stepTitle: {
-    flex: 1,
-    color: '#333',
+  modulesContainer: {
+    gap: 16,
   },
   quizGrid: {
     flexDirection: 'row',

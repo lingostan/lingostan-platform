@@ -5,7 +5,7 @@ import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { BaseText } from '@/components/ui/BaseText';
 import { router } from 'expo-router';
 import { QuizQuestion } from '@/components/ui/QuizQuestion';
-import MatchingPairs from '@/components/ui/MatchingPairs';
+import MatchingPairs from '@/components/questions/ui/MatchingPairs';
 
 // Типизация данных викторины
 type QuestionType = 'audio' | 'text' | 'match';
