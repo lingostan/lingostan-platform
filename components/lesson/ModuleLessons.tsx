@@ -1,12 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { BaseText } from '@/components/ui/BaseText';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useGetModuleById } from '@/api/generated/lingoStanAPI';
-import type { Module } from '@/api/generated/models';
-import { markLessonCompleted, getLessonProgress, applyProgressToModule } from '@/utils/progressStore';
-import Lesson from './Lesson';
 
 interface ModuleLessonsProps {
   moduleId: string;
@@ -17,21 +15,9 @@ export const ModuleLessons: React.FC<ModuleLessonsProps> = ({
   moduleId,
   initialLessonId,
 }) => {
-  const [moduleData, setModuleData] = useState<Module | null>(null);
-  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(initialLessonId ?? null);
-  const [lessonTitle, setLessonTitle] = useState<string | undefined>(undefined);
-  
   const { data: moduleResponse, isLoading, error: apiError } = useGetModuleById(moduleId);
 
-  useEffect(() => {
-    if (moduleResponse?.data) {
-      getLessonProgress().then(progress => {
-        const moduleWithProgress = applyProgressToModule(moduleResponse.data, progress);
-        setModuleData(moduleWithProgress);
-        setSelectedLessonId(initialLessonId ?? null);
-      });
-    }
-  }, [moduleResponse, initialLessonId]);
+  const moduleData = moduleResponse?.data || null;
 
   const lessonsWithStatus = useMemo(() => {
     if (!moduleData) {
@@ -52,49 +38,23 @@ export const ModuleLessons: React.FC<ModuleLessonsProps> = ({
     });
   }, [moduleData]);
 
+  // Если передан initialLessonId, сразу открываем урок
   useEffect(() => {
-    if (!selectedLessonId && lessonsWithStatus.length > 0) {
-      const firstAvailable = lessonsWithStatus.find(lesson => !lesson.locked);
-      setSelectedLessonId(firstAvailable?.id ?? null);
-      setLessonTitle(firstAvailable?.title);
-    } else if (selectedLessonId) {
-      const current = lessonsWithStatus.find(lesson => lesson.id === selectedLessonId);
-      if (!current) {
-        const firstAvailable = lessonsWithStatus.find(lesson => !lesson.locked);
-        setSelectedLessonId(firstAvailable?.id ?? null);
-        setLessonTitle(firstAvailable?.title);
-      } else {
-        if (current.locked) {
-          const firstAvailable = lessonsWithStatus.find(lesson => !lesson.locked);
-          setSelectedLessonId(firstAvailable?.id ?? null);
-          setLessonTitle(firstAvailable?.title);
-        } else {
-          setLessonTitle(current.title);
-        }
+    if (initialLessonId && moduleData) {
+      const lesson = lessonsWithStatus.find(l => l.id === initialLessonId);
+      if (lesson && !lesson.locked) {
+        router.push(`/modules/${moduleId}/lesson/${initialLessonId}` as any);
       }
     }
-  }, [lessonsWithStatus, selectedLessonId]);
+  }, [initialLessonId, moduleData, moduleId, lessonsWithStatus]);
 
   const handleLessonSelect = (lessonId: string) => {
     const lesson = lessonsWithStatus.find(item => item.id === lessonId);
     if (!lesson || lesson.locked) {
       return;
     }
-    setSelectedLessonId(lessonId);
-    setLessonTitle(lesson.title);
-  };
-
-  const handleLessonComplete = (lessonId: string) => {
-    void markLessonCompleted(lessonId);
-    setModuleData(prev => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        lessons: prev.lessons.map(lesson =>
-          lesson.id === lessonId ? { ...lesson, completed: true } : lesson,
-        ),
-      };
-    });
+    // Навигация к уроку через роутинг
+    router.push(`/modules/${moduleId}/lesson/${lessonId}` as any);
   };
 
   if (isLoading) {
@@ -120,23 +80,18 @@ export const ModuleLessons: React.FC<ModuleLessonsProps> = ({
 
       <View style={styles.lessonList}>
         {lessonsWithStatus.map(lesson => {
-          const isSelected = selectedLessonId === lesson.id;
           return (
             <TouchableOpacity
               key={lesson.id}
               style={[
                 styles.lessonChip,
                 lesson.locked && styles.lessonChipLocked,
-                isSelected && styles.lessonChipActive,
               ]}
               onPress={() => handleLessonSelect(lesson.id)}
               disabled={lesson.locked}
             >
               <View style={styles.lessonChipContent}>
-                <BaseText
-                  variant="bodyBold"
-                  style={isSelected ? styles.lessonChipTextActive : undefined}
-                >
+                <BaseText variant="bodyBold">
                   {lesson.title}
                 </BaseText>
                 {lesson.locked ? (
@@ -150,16 +105,6 @@ export const ModuleLessons: React.FC<ModuleLessonsProps> = ({
         })}
       </View>
 
-      {selectedLessonId && (
-        <View style={styles.lessonContainer}>
-          <Lesson
-            moduleId={moduleId}
-            lessonId={selectedLessonId}
-            lessonTitle={lessonTitle}
-            onComplete={handleLessonComplete}
-          />
-        </View>
-      )}
     </View>
   );
 };
@@ -194,17 +139,11 @@ const styles = StyleSheet.create({
   lessonChipActive: {
     backgroundColor: '#58cc02',
   },
-  lessonChipTextActive: {
-    color: '#fff',
-  },
   lessonChipContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     flexShrink: 1,
-  },
-  lessonContainer: {
-    flex: 1,
   },
   errorContainer: {
     flex: 1,

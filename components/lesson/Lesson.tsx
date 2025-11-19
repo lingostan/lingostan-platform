@@ -6,7 +6,6 @@ import { BaseText } from '@/components/ui/BaseText';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useGetLessonExercises } from '@/api/generated/lingoStanAPI';
-import type { LessonQuestion } from '@/types/lesson';
 import type { Exercise } from '@/api/generated/models';
 import { LetterIntroQuestion } from '@/components/questions/letter-intro/LetterIntroQuestion';
 import { SelectWordQuestion } from '@/components/questions/select-word/SelectWordQuestion';
@@ -22,7 +21,7 @@ interface LessonProps {
 }
 
 export const Lesson: React.FC<LessonProps> = ({ moduleId, lessonId, lessonTitle, onComplete }) => {
-  const [questions, setQuestions] = useState<LessonQuestion[]>([]);
+  const [questions, setQuestions] = useState<Exercise[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [feedbackState, setFeedbackState] = useState<'idle' | 'correct' | 'incorrect'>('idle');
@@ -51,9 +50,7 @@ export const Lesson: React.FC<LessonProps> = ({ moduleId, lessonId, lessonTitle,
 
   useEffect(() => {
     if (exercisesResponse?.data?.exercises) {
-      // Transform Exercise[] to LessonQuestion[]
-      const transformedQuestions = exercisesResponse.data.exercises as unknown as LessonQuestion[];
-      setQuestions(transformedQuestions);
+      setQuestions(exercisesResponse.data.exercises);
       setCurrentIndex(0);
       setSelectedOptionId(null);
       setFeedbackState('idle');
@@ -77,14 +74,14 @@ export const Lesson: React.FC<LessonProps> = ({ moduleId, lessonId, lessonTitle,
   }, [currentIndex, feedbackState, lessonCompleted, totalQuestions]);
 
   useEffect(() => {
-    if (!isLoading && !error) {
+    if (!isLoading && !apiError) {
       setSelectedOptionId(null);
       setFeedbackState('idle');
       setIsReadyToCheck(false);
       checkHandlerRef.current = null;
       resetHandlerRef.current = null;
     }
-  }, [currentIndex, isLoading, error]);
+  }, [currentIndex, isLoading, apiError]);
 
   useEffect(() => {
     feedbackStateRef.current = feedbackState;

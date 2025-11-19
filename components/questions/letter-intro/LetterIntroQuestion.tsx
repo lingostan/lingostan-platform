@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { BaseText } from '@/components/ui/BaseText';
 import { AudioPlayButton } from '@/components/questions/ui/AudioPlayButton';
 import { AnswerOption } from '@/components/questions/ui/AnswerOption';
@@ -22,25 +22,31 @@ export const LetterIntroQuestion: React.FC<LetterIntroQuestionProps> = ({
   onSelectOption,
 }) => {
   const audioPlayer = useAudioPlayer();
-  const imageSource = resolveImageAsset(data.image);
+  const imageSource = resolveImageAsset(data.image) as any;
 
   const interactionDisabled = feedbackState !== 'idle';
 
   return (
     <View style={styles.container}>
-      <BaseText variant="headingL" style={styles.letter}>
-        {data.letter}
-      </BaseText>
+      <View style={styles.header}>
+        <BaseText variant="headingM" style={styles.letter}>
+          {data.letter}
+        </BaseText>
+      </View>
 
-      <AudioPlayButton onPress={() => audioPlayer.play(resolveAudioAsset(data.letterAudio))} />
+      <View style={styles.mediaContainer}>
+        <AudioPlayButton onPress={() => audioPlayer.play(resolveAudioAsset(data.letterAudio))} />
 
-      <ImageCard
-        source={imageSource}
-        onPress={() => audioPlayer.play(resolveAudioAsset(data.letterAudio))}
-      />
+        {imageSource && (
+          <ImageCard
+            source={imageSource}
+            onPress={() => audioPlayer.play(resolveAudioAsset(data.letterAudio))}
+          />
+        )}
+      </View>
 
-      <View style={styles.options}>
-        {data.options.map(option => {
+      <View style={styles.optionsContainer}>
+        {data.options.map((option, index) => {
           let state: Parameters<typeof AnswerOption>[0]['state'] = 'default';
 
           if (feedbackState === 'idle') {
@@ -55,16 +61,23 @@ export const LetterIntroQuestion: React.FC<LetterIntroQuestionProps> = ({
             }
           }
 
+          const isEven = index % 2 === 0;
+          const optionStyle = [
+            styles.optionWrapper,
+            isEven ? styles.optionLeft : styles.optionRight,
+          ];
+
           return (
-            <AnswerOption
-              key={option.id}
-              label={option.label}
-              onPress={() => {
-                if (interactionDisabled) return;
-                onSelectOption(option.id);
-              }}
-              state={state}
-            />
+            <View key={option.id} style={optionStyle}>
+              <AnswerOption
+                label={option.label}
+                onPress={() => {
+                  if (interactionDisabled) return;
+                  onSelectOption(option.id);
+                }}
+                state={state}
+              />
+            </View>
           );
         })}
       </View>
@@ -76,18 +89,67 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     paddingHorizontal: 16,
-    gap: 16,
+    width: '100%',
+    ...Platform.select({
+      ios: {
+        paddingVertical: 8,
+      },
+      android: {
+        paddingVertical: 12,
+      },
+    }),
+  },
+  header: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   letter: {
-    fontSize: 48,
+    fontSize: 56,
+    fontWeight: '700',
+    ...Platform.select({
+      ios: {
+        fontFamily: 'System',
+      },
+      android: {
+        fontFamily: 'sans-serif-medium',
+      },
+    }),
   },
-  options: {
+  mediaContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 24,
+    ...Platform.select({
+      ios: {
+        gap: 16,
+      },
+      android: {
+        gap: 16,
+      },
+    }),
+  },
+  optionsContainer: {
     width: '100%',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
-    justifyContent: 'space-between',
+    marginHorizontal: -6,
+    ...Platform.select({
+      ios: {
+        marginTop: 4,
+      },
+      android: {
+        marginTop: 8,
+      },
+    }),
   },
+  optionWrapper: {
+    width: '50%',
+    paddingHorizontal: 6,
+    marginBottom: 12,
+  },
+  optionLeft: {},
+  optionRight: {},
 });
 
 export default LetterIntroQuestion;

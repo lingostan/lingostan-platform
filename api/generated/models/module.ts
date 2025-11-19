@@ -16,4 +16,20 @@ export interface Module {
   description: string;
   /** Список уроков в модуле */
   lessons: LessonSummary[];
+  /**
+   * Общее количество уроков в модуле
+   * @minimum 0
+   */
+  totalLessons: number;
+  /**
+   * Количество завершенных уроков в модуле
+   * @minimum 0
+   */
+  completedLessons: number;
+  /**
+   * Процент выполнения модуля (0-100)
+   * @minimum 0
+   * @maximum 100
+   */
+  progressPercentage: number;
 }

@@ -3,26 +3,40 @@ import { BaseInput } from '@/components/ui/BaseInput';
 import { BaseText } from '@/components/ui/BaseText';
 import { IconButton } from '@/components/ui/IconButton';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, Image, ScrollView } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useGetUserProfile } from '@/api/generated/lingoStanAPI';
 
 export default function Profile() {
   const router = useRouter()
   // Состояния для хранения данных пользователя
   const [isEditing, setIsEditing] = useState(false); // Режим редактирования
-  const [name, setName] = useState('Иван Иванов'); // ФИО
-  const [gender, setGender] = useState('Мужской'); // Пол
-  const [age, setAge] = useState('25'); // Возраст
+  const [name, setName] = useState(''); // ФИО
+  const [gender, setGender] = useState(''); // Пол
+  const [age, setAge] = useState(''); // Возраст
   const [email, setEmail] = useState('');
-
-
 
   // Получаем отступы для безопасной области
   const insets = useSafeAreaInsets();
+  
+  // Получаем данные пользователя через API
+  const { data: userProfileResponse, isLoading, error } = useGetUserProfile();
+
+  // Обновляем локальное состояние при получении данных
+  useEffect(() => {
+    if (userProfileResponse?.data?.user) {
+      const user = userProfileResponse.data.user;
+      setName(user.name || '');
+      setEmail(user.email || '');
+      setGender(user.gender || '');
+      setAge(user.age?.toString() || '');
+    }
+  }, [userProfileResponse]);
 
   // Функция для сохранения изменений
   const handleSave = () => {
@@ -45,22 +59,27 @@ export default function Profile() {
     }
   }
 
-  useEffect(() => {
-     AsyncStorage.getItem('user').then(data => {
-      if (data) {
-        return JSON.parse(data);
-      }
-    })
-    .then(user => {
-      setEmail(user.email);
-      setName(user.name);
-      setAge(user.age);
-      setGender(user.gender);
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  }, [])
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
+        <LoadingSpinner />
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !userProfileResponse?.data) {
+    return (
+      <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
+        <BaseText variant="bodyBold" color="red">
+          {'Не удалось загрузить профиль'}
+        </BaseText>
+      </SafeAreaView>
+    );
+  }
+
+  const user = userProfileResponse.data.user;
+  const learningLanguages = userProfileResponse.data.learningLanguages || [];
+  const primaryLanguage = learningLanguages[0];
 
 
   return (
@@ -89,8 +108,16 @@ export default function Profile() {
             <>
               <BaseText variant='subtitle' style={styles.infoName}>{name}</BaseText>
               <BaseText variant='body' style={styles.infoEmail} color='secondary'>{email}</BaseText>
-              {/* <BaseText variant='body' style={styles.infoAge} color='secondary'>{age}</BaseText> */}
-              <BaseText variant='caption' style={styles.infoDate} color='secondary'>Регистрация: апрель 2025</BaseText>
+              {primaryLanguage && (
+                <BaseText variant='body' style={styles.infoLanguage} color='secondary'>
+                  Изучаю: {primaryLanguage.languageName} ({Math.round(primaryLanguage.progressPercentage)}%)
+                </BaseText>
+              )}
+              {user.registrationDate && (
+                <BaseText variant='caption' style={styles.infoDate} color='secondary'>
+                  Регистрация: {new Date(user.registrationDate).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}
+                </BaseText>
+              )}
               <BaseText variant='bodyBold' style={styles.infoFriends}>0 друзей</BaseText>
             </> :
             <>
@@ -159,7 +186,7 @@ export default function Profile() {
                   <Image style={styles.statsImage} resizeMode='contain' source={require('@/assets/images/icons/heart.svg')} /> 
                   <View style={styles.statsBody}>
                     <View style={styles.statsTitle}>
-                      <BaseText variant='bodyBold'>0</BaseText>
+                      <BaseText variant='bodyBold'>{primaryLanguage?.totalXP || 0}</BaseText>
                     </View>
                     <View style={styles.statsDesc}>
                       <BaseText variant='body'>Очки опыта</BaseText>
@@ -347,6 +374,9 @@ const styles = StyleSheet.create({
   infoDate: {
 
   },
+  infoLanguage: {
+    marginTop: 4,
+  },
 
   infoFriends: {
     color:' rgb(33, 150, 243)'
@@ -409,7 +439,6 @@ const styles = StyleSheet.create({
   },
   statsTitle: {
     alignItems: 'flex-start',
-    top: -2
   },
   statsDesc: {
 
@@ -579,7 +608,7 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   inviteTitle: {
-    fontSize: 24
+    // fontSize применяется к тексту внутри, а не к View
   },
 
   inviteDescription: {
@@ -589,5 +618,12 @@ const styles = StyleSheet.create({
 
   inviteButtonContainer: {
 
-  }
+  },
+  flag: {
+    width: 48,
+    height: 48,
+  },
+  achivementDesc: {
+    flex: 1,
+  },
 });

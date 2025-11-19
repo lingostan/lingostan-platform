@@ -119,6 +119,42 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /alphabet:
+    get:
+      operationId: getAlphabet
+      summary: Получить список букв алфавита
+      description: Возвращает список всех букв лакского алфавита с их транскрипцией и аудио
+      tags:
+        - Alphabet
+      responses:
+        '200':
+          description: Успешный ответ со списком букв алфавита
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlphabetListResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /user/me:
+    get:
+      operationId: getUserProfile
+      summary: Получить профиль текущего пользователя
+      description: Возвращает персональную информацию пользователя, языки обучения и прогресс по каждому языку
+      tags:
+        - User
+      responses:
+        '200':
+          description: Успешный ответ с информацией о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
 components:
   schemas:
     Module:
@@ -128,6 +164,9 @@ components:
         - title
         - description
         - lessons
+        - totalLessons
+        - completedLessons
+        - progressPercentage
       properties:
         id:
           type: string
@@ -146,6 +185,22 @@ components:
           description: Список уроков в модуле
           items:
             $ref: '#/components/schemas/LessonSummary'
+        totalLessons:
+          type: integer
+          minimum: 0
+          description: Общее количество уроков в модуле
+          example: 10
+        completedLessons:
+          type: integer
+          minimum: 0
+          description: Количество завершенных уроков в модуле
+          example: 3
+        progressPercentage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Процент выполнения модуля (0-100)
+          example: 30.0
 
     LessonSummary:
       type: object
@@ -487,6 +542,142 @@ components:
           items:
             $ref: '#/components/schemas/Exercise'
 
+    AlphabetLetter:
+      type: object
+      required:
+        - id
+        - letter
+        - transcription
+        - audioUrl
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор буквы
+          example: 1
+        letter:
+          type: string
+          description: Буква алфавита
+          example: "А"
+        transcription:
+          type: string
+          description: Транскрипция буквы
+          example: "ажари"
+        audioUrl:
+          type: string
+          description: URL аудио файла с произношением буквы
+          example: "https://api.lingostan.com/v1/assets/audio/alphabet/lakku/1.mp3"
+
+    AlphabetListResponse:
+      type: object
+      required:
+        - letters
+      properties:
+        letters:
+          type: array
+          description: Список букв алфавита
+          items:
+            $ref: '#/components/schemas/AlphabetLetter'
+
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор пользователя
+          example: "user-123"
+        name:
+          type: string
+          description: ФИО пользователя
+          example: "Иван Иванов"
+        email:
+          type: string
+          format: email
+          description: Email пользователя
+          example: "ivan@example.com"
+        gender:
+          type: string
+          enum: [Мужской, Женский, Другое]
+          description: Пол пользователя
+          example: "Мужской"
+        age:
+          type: integer
+          minimum: 0
+          maximum: 150
+          description: Возраст пользователя
+          example: 25
+        avatarUrl:
+          type: string
+          format: uri
+          description: URL аватара пользователя
+          example: "https://api.lingostan.com/v1/assets/images/avatar.png"
+        registrationDate:
+          type: string
+          format: date-time
+          description: Дата регистрации
+          example: "2025-04-01T00:00:00Z"
+
+    LanguageProgress:
+      type: object
+      required:
+        - languageCode
+        - languageName
+        - totalLessons
+        - completedLessons
+        - progressPercentage
+      properties:
+        languageCode:
+          type: string
+          description: Код языка (ISO 639-1)
+          example: "lak"
+        languageName:
+          type: string
+          description: Название языка
+          example: "Лакский"
+        totalLessons:
+          type: integer
+          minimum: 0
+          description: Общее количество уроков
+          example: 50
+        completedLessons:
+          type: integer
+          minimum: 0
+          description: Количество завершенных уроков
+          example: 15
+        progressPercentage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Процент выполнения в виде числа от 0 до 100
+          example: 30.0
+        currentStreak:
+          type: integer
+          minimum: 0
+          description: Текущая серия дней подряд
+          example: 5
+        totalXP:
+          type: integer
+          minimum: 0
+          description: Общее количество опыта
+          example: 1500
+
+    UserProfile:
+      type: object
+      required:
+        - user
+        - learningLanguages
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        learningLanguages:
+          type: array
+          description: Список языков, которые изучает пользователь
+          items:
+            $ref: '#/components/schemas/LanguageProgress'
+
     Error:
       type: object
       required:
@@ -522,6 +713,16 @@ components:
             message: "Внутренняя ошибка сервера"
             code: "INTERNAL_SERVER_ERROR"
 
+    Unauthorized:
+      description: Пользователь не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: "Требуется авторизация"
+            code: "UNAUTHORIZED"
+
 tags:
   - name: Modules
     description: Операции с модулями
@@ -529,4 +730,8 @@ tags:
     description: Операции с уроками
   - name: Exercises
     description: Операции с упражнениями
+  - name: Alphabet
+    description: Операции с алфавитом
+  - name: User
+    description: Операции с пользователем
 

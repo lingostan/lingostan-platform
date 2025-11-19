@@ -14,7 +14,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "api:generate": "orval",
-    "api:validate": "redocly lint api.yaml",
+    "api:validate": "redocly lint ./api.yaml",
     "api:preview": "redocly preview-docs api.yaml",
     "api:build-docs": "redocly build-docs api.yaml -o ./docs"
   },

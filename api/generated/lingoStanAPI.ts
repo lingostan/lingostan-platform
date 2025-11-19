@@ -21,12 +21,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AlphabetListResponse,
   ExercisesListResponse,
   InternalServerErrorResponse,
   LessonsListResponse,
   Module,
   ModulesListResponse,
-  NotFoundResponse
+  NotFoundResponse,
+  UnauthorizedResponse,
+  UserProfile
 } from './models';
 
 import { apiClient } from '../../utils/apiClient';
@@ -402,6 +405,192 @@ export function useGetLessonExercises<TData = Awaited<ReturnType<typeof getLesso
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetLessonExercisesQueryOptions(moduleId,lessonId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Возвращает список всех букв лакского алфавита с их транскрипцией и аудио
+ * @summary Получить список букв алфавита
+ */
+export const getAlphabet = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<AlphabetListResponse>(
+      {url: `/alphabet`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetAlphabetQueryKey = () => {
+    return [
+    `/alphabet`
+    ] as const;
+    }
+
+    
+export const getGetAlphabetQueryOptions = <TData = Awaited<ReturnType<typeof getAlphabet>>, TError = InternalServerErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAlphabet>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAlphabetQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAlphabet>>> = ({ signal }) => getAlphabet(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAlphabet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAlphabetQueryResult = NonNullable<Awaited<ReturnType<typeof getAlphabet>>>
+export type GetAlphabetQueryError = InternalServerErrorResponse
+
+
+export function useGetAlphabet<TData = Awaited<ReturnType<typeof getAlphabet>>, TError = InternalServerErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAlphabet>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAlphabet>>,
+          TError,
+          Awaited<ReturnType<typeof getAlphabet>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAlphabet<TData = Awaited<ReturnType<typeof getAlphabet>>, TError = InternalServerErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAlphabet>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAlphabet>>,
+          TError,
+          Awaited<ReturnType<typeof getAlphabet>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAlphabet<TData = Awaited<ReturnType<typeof getAlphabet>>, TError = InternalServerErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAlphabet>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Получить список букв алфавита
+ */
+
+export function useGetAlphabet<TData = Awaited<ReturnType<typeof getAlphabet>>, TError = InternalServerErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAlphabet>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAlphabetQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Возвращает персональную информацию пользователя, языки обучения и прогресс по каждому языку
+ * @summary Получить профиль текущего пользователя
+ */
+export const getUserProfile = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return apiClient<UserProfile>(
+      {url: `/user/me`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetUserProfileQueryKey = () => {
+    return [
+    `/user/me`
+    ] as const;
+    }
+
+    
+export const getGetUserProfileQueryOptions = <TData = Awaited<ReturnType<typeof getUserProfile>>, TError = UnauthorizedResponse | InternalServerErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserProfile>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetUserProfileQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserProfile>>> = ({ signal }) => getUserProfile(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUserProfile>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUserProfileQueryResult = NonNullable<Awaited<ReturnType<typeof getUserProfile>>>
+export type GetUserProfileQueryError = UnauthorizedResponse | InternalServerErrorResponse
+
+
+export function useGetUserProfile<TData = Awaited<ReturnType<typeof getUserProfile>>, TError = UnauthorizedResponse | InternalServerErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserProfile>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserProfile>>,
+          TError,
+          Awaited<ReturnType<typeof getUserProfile>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserProfile<TData = Awaited<ReturnType<typeof getUserProfile>>, TError = UnauthorizedResponse | InternalServerErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserProfile>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserProfile>>,
+          TError,
+          Awaited<ReturnType<typeof getUserProfile>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserProfile<TData = Awaited<ReturnType<typeof getUserProfile>>, TError = UnauthorizedResponse | InternalServerErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserProfile>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Получить профиль текущего пользователя
+ */
+
+export function useGetUserProfile<TData = Awaited<ReturnType<typeof getUserProfile>>, TError = UnauthorizedResponse | InternalServerErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserProfile>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetUserProfileQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

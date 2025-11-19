@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { isDevelopment, handleMockRequest } from './mockServer';
 
 // Создаем кастомный инстанс axios
 const axiosInstance: AxiosInstance = axios.create({
@@ -50,6 +51,17 @@ export type AxiosConfig = AxiosRequestConfig;
 
 // Функция-обертка для orval mutator
 export const apiClient = (config: AxiosRequestConfig) => {
+  // В режиме разработки используем моки
+  if (isDevelopment) {
+    console.log(`[MOCK API] ${config.method?.toUpperCase()} ${config.url}`);
+    // Возвращаем промис с моковым ответом
+    return handleMockRequest(config).catch(error => {
+      // Если моковый обработчик выбросил ошибку, пробрасываем её дальше
+      throw error;
+    });
+  }
+
+  // В продакшене используем реальный API
   return axiosInstance.request(config);
 };
 
