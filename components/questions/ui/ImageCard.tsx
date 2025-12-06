@@ -1,14 +1,17 @@
 import React from 'react';
-import { Image, ImageSourcePropType, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import { Image, ImageSourcePropType, StyleSheet, TouchableOpacity, ViewStyle, Text } from 'react-native';
 
 interface ImageCardProps {
   source?: ImageSourcePropType;
   onPress?: () => void;
   style?: ViewStyle;
+  name?: string
 }
 
-export const ImageCard: React.FC<ImageCardProps> = ({ source, onPress, style }) => {
+export const ImageCard: React.FC<ImageCardProps> = ({ source, onPress, style, name }) => {
+
   return (
+    <>
     <TouchableOpacity
       style={[styles.container, style]}
       activeOpacity={onPress ? 0.85 : 1}
@@ -17,6 +20,9 @@ export const ImageCard: React.FC<ImageCardProps> = ({ source, onPress, style }) 
     >
       {source && <Image source={source} style={styles.image} resizeMode="cover" />}
     </TouchableOpacity>
+    {name && <Text>{name}</Text>}
+    </>
+    
   );
 };
 
@@ -27,6 +33,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     backgroundColor: '#f5f5f5',
+    display: 'flex'
   },
   image: {
     width: '100%',

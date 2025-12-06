@@ -7,6 +7,7 @@ import { ImageCard } from '@/components/questions/ui/ImageCard';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { resolveAudioAsset, resolveImageAsset } from '@/mocks/assets';
 import type { LetterIntroQuestionData } from '@/types/lesson';
+import { imageName } from './constants/ImageWordMap';
 
 interface LetterIntroQuestionProps {
   data: LetterIntroQuestionData;
@@ -23,6 +24,8 @@ export const LetterIntroQuestion: React.FC<LetterIntroQuestionProps> = ({
 }) => {
   const audioPlayer = useAudioPlayer();
   const imageSource = resolveImageAsset(data.image) as any;
+  const imgName = imageName[data.image]
+
 
   const interactionDisabled = feedbackState !== 'idle';
 
@@ -40,6 +43,7 @@ export const LetterIntroQuestion: React.FC<LetterIntroQuestionProps> = ({
         {imageSource && (
           <ImageCard
             source={imageSource}
+            name={imgName}
             onPress={() => audioPlayer.play(resolveAudioAsset(data.letterAudio))}
           />
         )}
