@@ -1,0 +1,161 @@
+{
+  "id": "lesson-1",
+  "title": "1 урок (а,аь,и,е,й)",
+  "questions": [
+    {
+      "id": "q1",
+      "type": "letterIntro",
+      "letter": "Познакомься с буквой \"А\"",
+      "letterAudio": "letter-a.m4a",
+      "image": "rooster.jpeg",
+      "options": [
+        { "id": "q1o1", "label": "Ажари", "isCorrect": true }
+      ]
+    },
+    {
+      "id": "q2",
+      "type": "letterIntro",
+      "letter": "Выбери слово с буквой \"А\"",
+      "letterAudio": "letter-a.m4a",
+      "options": [
+        { "id": "q2o1", "label": "Аьнаки", "isCorrect": false },
+        { "id": "q2o2", "label": "Ажари", "isCorrect": true },
+        { "id": "q2o3", "label": "Ису", "isCorrect": false }
+      ]
+    },
+    {
+      "id": "q3",
+      "type": "letterIntro",
+      "letter": "Познакомься с буквой \"Аь\"",
+      "letterAudio": "letter-a_.m4a",
+      "image": "chicken.jpeg",
+      "options": [
+        { "id": "q1o1", "label": "Аьнаки", "isCorrect": true }
+      ]
+    },
+    {
+      "id": "q4",
+      "type": "selectImage",
+      "letter": "Выбери слово с буквой \"Аь\"",
+      "options": [
+        { "id": "q8o1", "image": "horse.jpeg", "audio": "letter-ii.m4a", "isCorrect": false },
+        { "id": "q8o2", "image": "rooster.jpeg", "audio": "letter-a.m4a", "isCorrect": false },
+        { "id": "q8o3", "image": "owl.jpeg", "audio": "letter-i.m4a", "isCorrect": false },
+        { "id": "q8o4", "image": "chicken.jpeg", "audio": "letter-a_.m4a", "isCorrect": true }
+      ]
+    },
+    {
+      "id": "q5",
+      "type": "letterIntro",
+      "letter": "Познакомься с буквой \"И\"",
+      "letterAudio": "letter-i.m4a",
+      "image": "owl.jpeg",
+      "options": [
+        { "id": "q1o1", "label": "Ису", "isCorrect": true }
+      ]
+    },
+    {
+      "id": "q6",
+      "type": "selectWord",
+      "letter": "Выбери слово с буквой \"И\"",
+      "options": [
+        { "id": "q2o1", "label": "Аьнаки", "isCorrect": false },
+        { "id": "q2o2", "label": "Ажари", "isCorrect": false },
+        { "id": "q2o3", "label": "Ису", "isCorrect": true }
+      ]
+    },
+    {
+      "id": "q7",
+      "type": "letterIntro",
+      "letter": "Познакомься с буквой \"Е\"",
+      "letterAudio": "letter-e.m4a",
+      "image": "nettle.jpeg",
+      "options": [
+        { "id": "q1o1", "label": "Меч1", "isCorrect": true }
+      ]
+    },
+    {
+      "id": "q8",
+      "type": "selectWord",
+      "letter": "Выбери слово с буквой \"Е\"",
+      "options": [
+        { "id": "q2o1", "label": "Аьнаки", "isCorrect": false },
+        { "id": "q2o3", "label": "Ису", "isCorrect": false },
+        { "id": "q2o2", "label": "Меч1", "isCorrect": true }
+      ]
+    },
+    {
+      "id": "q9",
+      "type": "letterIntro",
+      "letter": "Познакомься с буквой \"Й\"",
+      "letterAudio": "letter-ii.m4a",
+      "image": "horse.jpeg",
+      "options": [
+        { "id": "q1o1", "label": "Меч1", "isCorrect": true }
+      ]
+    },
+    {
+      "id": "q10",
+      "type": "selectWord",
+      "letter": "Выбери слово с буквой \"Й\"",
+      "options": [
+        { "id": "q8o1", "image": "horse.jpeg", "audio": "letter-ii.m4a", "isCorrect": true },
+        { "id": "q8o2", "image": "rooster.jpeg", "audio": "letter-a.m4a", "isCorrect": false },
+        { "id": "q8o3", "image": "owl.jpeg", "audio": "letter-i.m4a", "isCorrect": false },
+        { "id": "q8o4", "image": "chicken.jpeg", "audio": "letter-a_.m4a", "isCorrect": false }
+      ]
+    },
+    {
+      "id": "q11",
+      "type": "matchPairs",
+      "title": "Найди пары: буква и слово",
+      "pairs": [
+        { "left": "Аь", "right": "Аьрхъ" },
+        { "left": "Б", "right": "Бубу" },
+        { "left": "Г", "right": "Гьол" },
+        { "left": "Д", "right": "Долу" },
+        { "left": "Ж", "right": "Жугъ" }
+      ]
+    },
+    {
+      "id": "q12",
+      "type": "matchAudio",
+      "title": "Прослушай аудио и выбери букву",
+      "audioOptions": [
+        { "id": "q12a1", "audio": "letter-a_.m4a" },
+        { "id": "q12a2", "audio": "letter-a_.m4a" },
+        { "id": "q12a3", "audio": "letter-i.m4a" },
+        { "id": "q12a4", "audio": "letter-e.m4a" },
+        { "id": "q12a5", "audio": "letter-ii.m4a" }
+      ],
+      "letterOptions": [
+        { "id": "q12l1", "letter": "а" },
+        { "id": "q12l2", "letter": "аь" },
+        { "id": "q12l3", "letter": "и" },
+        { "id": "q12l4", "letter": "е" },
+        { "id": "q12l5", "letter": "й" }
+      ],
+      "matches": {
+        "q12a1": "q12l1",
+        "q12a2": "q12l2",
+        "q12a3": "q12l3",
+        "q12a4": "q12l4",
+        "q12a5": "q12l5"
+      }
+    },
+    {
+      "id": "q13",
+      "type": "matchPairs",
+      "title": "Найди пару",
+      "pairs": [
+        { "left": "тя…", "right": "й" },
+        { "left": "…су", "right": "и" },
+        { "left": "…нак1и", "right": "аь" },
+        { "left": "…жари", "right": "а" },
+        { "left": "м…ч1", "right": "е" }
+      ]
+    }
+  ]
+}
+
+

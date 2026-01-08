@@ -1,0 +1,1583 @@
+openapi: 3.0.0
+paths:
+  /api/users/profile:
+    get:
+      operationId: UsersController_getProfile
+      parameters: []
+      responses:
+        '200':
+          description: Профиль пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+      security:
+        - bearer: []
+      summary: Получить профиль пользователя
+      tags:
+        - Users
+  /api/users/{id}:
+    put:
+      operationId: UsersController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Данные для обновления
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: Пользователь успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+      security:
+        - bearer: []
+      summary: Обновить данные пользователя
+      tags:
+        - Users
+  /api/users/languages:
+    get:
+      operationId: UsersController_getUserLanguages
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserLanguageDto'
+      security:
+        - bearer: []
+      summary: Получить языки пользователя
+      tags:
+        - Users
+  /api/auth/register:
+    post:
+      description: Создает нового пользователя и возвращает токены доступа
+      operationId: AuthController_register
+      parameters: []
+      requestBody:
+        required: true
+        description: Данные для регистрации
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDto'
+      responses:
+        '201':
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokensResponseDto'
+      summary: Регистрация пользователя
+      tags:
+        - Auth
+  /api/auth/login:
+    post:
+      description: Аутентификация пользователя и выдача токенов
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        description: Учетные данные для входа
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokensResponseDto'
+      summary: Вход в систему
+      tags:
+        - Auth
+  /api/auth/refresh:
+    post:
+      description: >-
+        Обновляет access token с помощью refresh token из cookies или тела
+        запроса
+      operationId: AuthController_refresh
+      parameters: []
+      requestBody:
+        required: false
+        description: Refresh token (опционально, если есть в cookies)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  description: Refresh token, если не передан в cookies
+      responses:
+        '200':
+          description: Токены успешно обновлены
+          content:
+            application/json:
+              schema:
+                example:
+                  access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      summary: Обновление токенов
+      tags:
+        - Auth
+  /api/auth/logout:
+    post:
+      description: Удаляет refresh token из cookies
+      operationId: AuthController_logout
+      parameters: []
+      responses:
+        '200':
+          description: Успешный выход
+          content:
+            application/json:
+              schema:
+                example:
+                  success: true
+      summary: Выход из системы
+      tags:
+        - Auth
+  /api/languages:
+    get:
+      description: Возвращает список всех языков с возможностью фильтрации
+      operationId: LanguageController_getAllLanguages
+      parameters:
+        - name: active
+          required: false
+          in: query
+          description: Фильтр только активных языков
+          schema:
+            example: true
+            type: boolean
+        - name: withAlphabet
+          required: false
+          in: query
+          description: Включить алфавит в ответ
+          schema:
+            example: false
+            type: boolean
+      responses:
+        '200':
+          description: Список языков успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LanguageResponseDto'
+      security:
+        - bearer: []
+      summary: Получить все языки
+      tags:
+        - Language
+    post:
+      operationId: LanguageController_createLanguage
+      parameters: []
+      requestBody:
+        required: true
+        description: Данные для создания языка
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLanguageDto'
+      responses:
+        '201':
+          description: Язык успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguageResponseDto'
+      security:
+        - bearer: []
+      summary: Создать новый язык
+      tags:
+        - Language
+  /api/languages/{id}:
+    get:
+      description: Возвращает информацию о конкретном языке
+      operationId: LanguageController_getLanguage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: Язык успешно найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguageResponseDto'
+      security:
+        - bearer: []
+      summary: Получить язык по ID
+      tags:
+        - Language
+    patch:
+      operationId: LanguageController_updateLanguage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      requestBody:
+        required: true
+        description: Данные для обновления языка
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLanguageDto'
+      responses:
+        '200':
+          description: Язык успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguageResponseDto'
+      security:
+        - bearer: []
+      summary: Обновить язык
+      tags:
+        - Language
+    delete:
+      operationId: LanguageController_deleteLanguage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: Язык успешно удален
+          content:
+            application/json:
+              schema:
+                example:
+                  message: Language deleted successfully
+      security:
+        - bearer: []
+      summary: Удалить язык
+      tags:
+        - Language
+  /api/languages/{id}/vocabulary:
+    get:
+      operationId: LanguageController_getVocabulary
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+      tags:
+        - Language
+    post:
+      operationId: LanguageController_updateVocabulary
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '201':
+          description: ''
+      security:
+        - bearer: []
+      tags:
+        - Language
+    delete:
+      operationId: LanguageController_deleteVocabularyByWord
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+      tags:
+        - Language
+  /api/languages/{id}/alphabet:
+    get:
+      operationId: LanguageController_getAlphabet
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+      tags:
+        - Language
+  /api/files/upload:
+    post:
+      description: >-
+        Загружает файл на сервер. Поддерживаемые форматы: изображения (JPG,
+        JPEG, PNG, GIF) и аудио (MP3, WAV, MPEG)
+      operationId: FilesController_uploadFile
+      parameters: []
+      requestBody:
+        required: true
+        description: Файл для загрузки
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Файл для загрузки
+      responses:
+        '201':
+          description: Файл успешно загружен
+          content:
+            application/json:
+              schema:
+                example:
+                  url: >-
+                    /api/files/myimage-5423-123e4567-e89b-12d3-a456-426614174000.jpg
+                  filename: myimage-5423-123e4567-e89b-12d3-a456-426614174000.jpg
+      security:
+        - bearer: []
+      summary: Загрузка файла
+      tags:
+        - Files
+  /api/files/{filename}:
+    get:
+      description: >-
+        Возвращает файл по имени. Поддерживаются русские имена файлов в
+        URL-encoded формате
+      operationId: FilesController_serveFile
+      parameters:
+        - name: filename
+          required: true
+          in: path
+          description: Имя файла
+          schema:
+            example: myimage-5423-123e4567-e89b-12d3-a456-426614174000.jpg
+            type: string
+      responses:
+        '200':
+          description: Файл найден и возвращен
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+      security:
+        - bearer: []
+      summary: Получение файла
+      tags:
+        - Files
+  /api/learning/lessons:
+    put:
+      operationId: LessonsController_createLesson
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLessonDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonResponseDto'
+      security:
+        - bearer: []
+      summary: Создать урок
+      tags:
+        - Lessons
+    get:
+      operationId: LessonsController_getAllLessons
+      parameters:
+        - name: languageId
+          required: false
+          in: query
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LessonResponseDto'
+      security:
+        - bearer: []
+      summary: Получить все уроки
+      tags:
+        - Lessons
+  /api/learning/lessons/{id}:
+    patch:
+      operationId: LessonsController_updateLesson
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLessonDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonResponseDto'
+      security:
+        - bearer: []
+      summary: Обновить урок
+      tags:
+        - Lessons
+    get:
+      operationId: LessonsController_getLesson
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonResponseDto'
+      security:
+        - bearer: []
+      summary: Получить урок по ID
+      tags:
+        - Lessons
+    delete:
+      operationId: LessonsController_deleteLesson
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 123e4567-e89b-12d3-a456-426614174000
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  message: Lesson deleted successfully
+      security:
+        - bearer: []
+      summary: Удалить урок
+      tags:
+        - Lessons
+  /api/learning/lessons/module/{moduleId}:
+    get:
+      operationId: LessonsController_getLessonsByModule
+      parameters:
+        - name: moduleId
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LessonResponseDto'
+      security:
+        - bearer: []
+      summary: Получить уроки по модулю с прогрессом
+      tags:
+        - Lessons
+  /api/learning/lessons/{id}/start:
+    post:
+      operationId: LessonsController_startLesson
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  started: true
+      security:
+        - bearer: []
+      summary: Начать урок
+      tags:
+        - Lessons
+  /api/learning/lessons/{id}/complete:
+    post:
+      operationId: LessonsController_completeLesson
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  completed: true
+                  progress: 100
+      security:
+        - bearer: []
+      summary: Завершить урок
+      tags:
+        - Lessons
+  /api/learning/exercises:
+    put:
+      operationId: ExercisesController_createExercise
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExerciseDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseResponseDto'
+      security:
+        - bearer: []
+      summary: Создать упражнение
+      tags:
+        - Exercises
+    get:
+      operationId: ExercisesController_getAllExercises
+      parameters:
+        - name: languageId
+          required: false
+          in: query
+          schema:
+            example: 1
+            type: number
+        - name: type
+          required: false
+          in: query
+          schema:
+            enum:
+              - MULTIPLE_CHOICE
+              - MULTIPLE_CHOICE_IMGS
+              - MATCHING
+              - MATCHING_AUDIO
+              - TRANSLATION
+              - LISTENING
+              - SPEAKING
+              - FILL_BLANK
+              - REORDER
+              - TRUE_FALSE
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExerciseResponseDto'
+      security:
+        - bearer: []
+      summary: Получить все упражнения
+      tags:
+        - Exercises
+  /api/learning/exercises/{id}:
+    patch:
+      operationId: ExercisesController_updateExercise
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateExerciseDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseResponseDto'
+      security:
+        - bearer: []
+      summary: Обновить упражнение
+      tags:
+        - Exercises
+    get:
+      operationId: ExercisesController_getExercise
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseResponseDto'
+      security:
+        - bearer: []
+      summary: Получить упражнение по ID
+      tags:
+        - Exercises
+    delete:
+      operationId: ExercisesController_deleteExercise
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  message: Exercise deleted
+      security:
+        - bearer: []
+      summary: Удалить упражнение
+      tags:
+        - Exercises
+  /api/learning/exercises/lesson/{lessonId}:
+    get:
+      operationId: ExercisesController_getExercisesByLesson
+      parameters:
+        - name: lessonId
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExerciseResponseDto'
+      security:
+        - bearer: []
+      summary: Получить упражнения по уроку с прогрессом
+      tags:
+        - Exercises
+  /api/learning/exercises/{id}/complete:
+    post:
+      operationId: ExercisesController_completeExercise
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteExerciseDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseResultDto'
+      security:
+        - bearer: []
+      summary: Завершить упражнение
+      tags:
+        - Exercises
+  /api/learning/exercises/{id}/progress:
+    get:
+      operationId: ExercisesController_getExerciseProgress
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  completed: true
+                  score: 85
+                  attempts: 3
+      security:
+        - bearer: []
+      summary: Получить прогресс упражнения
+      tags:
+        - Exercises
+  /api/learning/modules:
+    put:
+      operationId: ModsController_createExercise
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateModuleDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleResponseDto'
+      security:
+        - bearer: []
+      summary: Создать модуль
+      tags:
+        - Mods
+    get:
+      operationId: ModsController_getAllModules
+      parameters:
+        - name: languageId
+          required: false
+          in: query
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModuleResponseDto'
+      security:
+        - bearer: []
+      summary: Получить все модули
+      tags:
+        - Mods
+  /api/learning/modules/{id}:
+    patch:
+      operationId: ModsController_updateModule
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateModuleDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleResponseDto'
+      security:
+        - bearer: []
+      summary: Обновить модуль
+      tags:
+        - Mods
+    get:
+      operationId: ModsController_getModule
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleResponseDto'
+      security:
+        - bearer: []
+      summary: Получить модуль по ID
+      tags:
+        - Mods
+    delete:
+      operationId: ModsController_deleteMod
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  message: Module deleted
+      security:
+        - bearer: []
+      summary: Удалить модуль
+      tags:
+        - Mods
+  /api/learning/modules/language/{languageId}:
+    get:
+      operationId: ModsController_getModulesByLanguage
+      parameters:
+        - name: languageId
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModuleResponseDto'
+      security:
+        - bearer: []
+      summary: Получить модули по языку с прогрессом
+      tags:
+        - Mods
+  /api/learning/modules/{id}/complete:
+    get:
+      operationId: ModsController_completeModule
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  completed: true
+                  progress: 100
+      security:
+        - bearer: []
+      summary: Завершить модуль
+      tags:
+        - Mods
+info:
+  title: Lingostan API
+  description: ''
+  version: '1.0'
+  contact: {}
+tags: []
+servers: []
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    AlphabetItemDto:
+      type: object
+      properties:
+        letter:
+          type: string
+        transcription:
+          type: string
+        audioUrl:
+          type: string
+      required:
+        - letter
+        - transcription
+    LanguageResponseDto:
+      type: object
+      properties:
+        id:
+          type: number
+        code:
+          type: string
+        name:
+          type: string
+        flagEmoji:
+          type: string
+        flagUrl:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: number
+        isActive:
+          type: boolean
+        totalModules:
+          type: number
+        totalExercises:
+          type: number
+        createdAt:
+          format: date-time
+          type: string
+        alphabet:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlphabetItemDto'
+      required:
+        - id
+        - code
+        - name
+        - flagEmoji
+        - flagUrl
+        - description
+        - difficulty
+        - isActive
+        - totalModules
+        - totalExercises
+        - createdAt
+        - alphabet
+    UserLanguageDto:
+      type: object
+      properties:
+        id:
+          type: number
+        language:
+          $ref: '#/components/schemas/LanguageResponseDto'
+        level:
+          type: number
+        progress:
+          type: number
+        isActive:
+          type: boolean
+        totalPoints:
+          type: number
+        streak:
+          type: number
+        startedAt:
+          format: date-time
+          type: string
+        lastPracticedAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - language
+        - level
+        - progress
+        - isActive
+        - totalPoints
+        - streak
+        - startedAt
+        - lastPracticedAt
+    UserResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        avatarUrl:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserLanguageDto'
+        age:
+          type: number
+        sex:
+          type: string
+        phone:
+          type: string
+      required:
+        - id
+        - email
+        - name
+        - avatarUrl
+        - isActive
+        - createdAt
+        - updatedAt
+        - languages
+        - age
+        - sex
+        - phone
+    UpdateUserDto:
+      type: object
+      properties:
+        avatarUrl:
+          type: string
+    RegisterDto:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum:
+            - user
+            - admin
+          example: user
+        sex:
+          type: string
+          enum:
+            - male
+            - female
+          example: male
+        age:
+          type: number
+        phone:
+          type: string
+        avatar:
+          type: string
+      required:
+        - email
+        - password
+        - name
+        - sex
+        - age
+    TokensResponseDto:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Access token для авторизации
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refresh_token:
+          type: string
+          description: Refresh token для обновления access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      required:
+        - access_token
+        - refresh_token
+    LoginDto:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+    CreateAlphabetItemDto:
+      type: object
+      properties:
+        letter:
+          type: string
+        transcription:
+          type: string
+        audioUrl:
+          type: string
+        exampleWord:
+          type: string
+        exampleTranslation:
+          type: string
+        exampleImageUrl:
+          type: string
+        order:
+          type: number
+      required:
+        - letter
+        - transcription
+        - audioUrl
+        - exampleWord
+        - exampleTranslation
+        - exampleImageUrl
+        - order
+    CreateLanguageDto:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        flagEmoji:
+          type: string
+        flagUrl:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: number
+        alphabet:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateAlphabetItemDto'
+      required:
+        - code
+        - name
+        - alphabet
+    UpdateAlphabetItemDto:
+      type: object
+      properties:
+        letter:
+          type: string
+        transcription:
+          type: string
+        audioUrl:
+          type: string
+        exampleWord:
+          type: string
+        exampleTranslation:
+          type: string
+        exampleImageUrl:
+          type: string
+        order:
+          type: number
+        id:
+          type: number
+      required:
+        - letter
+        - transcription
+        - audioUrl
+        - exampleWord
+        - exampleTranslation
+        - exampleImageUrl
+        - order
+        - id
+    UpdateLanguageDto:
+      type: object
+      properties:
+        alphabet:
+          type: array
+          items:
+            $ref: '#/components/schemas/UpdateAlphabetItemDto'
+      required:
+        - alphabet
+    VocabularyItemDto:
+      type: object
+      properties:
+        word:
+          type: string
+        translation:
+          type: string
+        audioUrl:
+          type: string
+        imageUrl:
+          type: string
+      required:
+        - word
+        - audioUrl
+        - imageUrl
+    CreateLessonDto:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        order:
+          type: number
+        duration:
+          type: number
+        videoUrl:
+          type: string
+        vocabulary:
+          type: array
+          items:
+            $ref: '#/components/schemas/VocabularyItemDto'
+        grammarNotes:
+          type: string
+        moduleId:
+          type: number
+        languageId:
+          type: number
+        exerciseIds:
+          type: array
+          items:
+            type: number
+      required:
+        - title
+        - description
+        - order
+        - moduleId
+        - languageId
+    LessonResponseDto:
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        order:
+          type: number
+        duration:
+          type: number
+        videoUrl:
+          type: string
+        vocabulary:
+          type: array
+          items:
+            $ref: '#/components/schemas/VocabularyItemDto'
+        grammarNotes:
+          type: string
+        isActive:
+          type: boolean
+        moduleId:
+          type: number
+        exerciseIds:
+          type: array
+          items:
+            type: number
+        progress:
+          type: number
+        completed:
+          type: boolean
+        exerciseCount:
+          type: number
+        totalPoints:
+          type: number
+        createdAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - title
+        - description
+        - order
+        - duration
+        - videoUrl
+        - vocabulary
+        - grammarNotes
+        - isActive
+        - moduleId
+        - exerciseIds
+        - progress
+        - completed
+        - exerciseCount
+        - totalPoints
+        - createdAt
+    UpdateLessonDto:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        moduleId:
+          type: number
+        exerciseIds:
+          type: array
+          items:
+            type: number
+    CreateExerciseDto:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        instructions:
+          type: string
+        content:
+          type: object
+        points:
+          type: number
+        order:
+          type: number
+        hints:
+          type: array
+          items:
+            type: string
+        explanation:
+          type: string
+        lessonId:
+          type: number
+        languageId:
+          type: number
+      required:
+        - type
+        - title
+        - content
+        - order
+        - lessonId
+        - languageId
+    ExerciseResponseDto:
+      type: object
+      properties:
+        id:
+          type: number
+        type:
+          type: string
+        title:
+          type: string
+        instructions:
+          type: string
+        content:
+          type: object
+        points:
+          type: number
+        order:
+          type: number
+        hints:
+          type: array
+          items:
+            type: string
+        explanation:
+          type: string
+        isActive:
+          type: boolean
+        lessonId:
+          type: number
+        completed:
+          type: boolean
+        userScore:
+          type: number
+        attempts:
+          type: number
+        createdAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - type
+        - title
+        - instructions
+        - content
+        - points
+        - order
+        - hints
+        - explanation
+        - isActive
+        - lessonId
+        - completed
+        - userScore
+        - attempts
+        - createdAt
+    UpdateExerciseDto:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: object
+        languageId:
+          type: number
+        lessonId:
+          type: number
+      required:
+        - title
+        - content
+        - languageId
+        - lessonId
+    CompleteExerciseDto:
+      type: object
+      properties:
+        userAnswer:
+          type: object
+        timeSpent:
+          type: number
+      required:
+        - userAnswer
+        - timeSpent
+    ExerciseResultDto:
+      type: object
+      properties: {}
+    CreateModuleDto:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        order:
+          type: number
+        difficulty:
+          type: string
+          enum:
+            - BEGINNER
+            - INTERMEDIATE
+            - ADVANCED
+          example: BEGINNER
+        imageUrl:
+          type: string
+        estimatedDuration:
+          type: number
+        languageId:
+          type: number
+        lessonIds:
+          type: array
+          items:
+            type: number
+      required:
+        - title
+        - description
+        - order
+        - languageId
+    ModuleResponseDto:
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        order:
+          type: number
+        difficulty:
+          type: string
+        imageUrl:
+          type: string
+        estimatedDuration:
+          type: number
+        totalLessons:
+          type: number
+        totalExercises:
+          type: number
+        isActive:
+          type: boolean
+        language:
+          type: number
+        progress:
+          type: number
+        completed:
+          type: boolean
+        lessons:
+          type: array
+          items:
+            type: number
+        createdAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - title
+        - description
+        - order
+        - difficulty
+        - imageUrl
+        - estimatedDuration
+        - totalLessons
+        - totalExercises
+        - isActive
+        - language
+        - progress
+        - completed
+        - lessons
+        - createdAt
+    UpdateModuleDto:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        languageId:
+          type: number
+        lessonIds:
+          type: array
+          items:
+            type: number
