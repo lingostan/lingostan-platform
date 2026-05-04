@@ -44,7 +44,7 @@ interface MATCHINGExerciseProps {
 
 type AssignmentsMap = Record<string, string | null>;
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'https://gilaniel.ru';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://gilaniel.ru';
 
 const resolveUrl = (url?: string | null) => {
   if (!url) return null;

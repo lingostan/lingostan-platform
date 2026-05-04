@@ -7,7 +7,7 @@ const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
 
 // Получаем базовый URL API из переменных окружения
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'https://gilaniel.ru';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://gilaniel.ru';
 
 // Создаем кастомный инстанс axios
 const axiosInstance: AxiosInstance = axios.create({

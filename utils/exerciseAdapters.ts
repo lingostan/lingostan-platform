@@ -113,7 +113,7 @@ interface AdaptedMatchingExercise {
   };
 }
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'https://gilaniel.ru';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://gilaniel.ru';
 
 /**
  * Преобразует URL в полный путь, если это относительный путь
@@ -124,9 +124,9 @@ const resolveUrl = (url: string | null | undefined): string | null => {
     return url;
   }
   if (url.startsWith('/')) {
-    return `${API_BASE_URL}${url}`;
+    return `${url}`;
   }
-  return `${API_BASE_URL}/${url}`;
+  return `${url}`;
 };
 
 /**
