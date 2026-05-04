@@ -26,7 +26,7 @@ export const MultipleChoiceExercise: React.FC<MultipleChoiceExerciseProps> = ({
   
   const letterAudioSource = data.letterAudio
     ? (data.letterAudio.startsWith('http') || data.letterAudio.startsWith('/')
-        ? (data.letterAudio.startsWith('/') ? `https://gilaniel.ru${data.letterAudio}` : data.letterAudio)
+        ? (data.letterAudio.startsWith('/') ? `${data.letterAudio}` : data.letterAudio)
         : resolveAudioAsset(data.letterAudio))
     : null;
 
@@ -67,7 +67,7 @@ export const MultipleChoiceExercise: React.FC<MultipleChoiceExerciseProps> = ({
 
           const optionAudioSource = option.audio
             ? (option.audio.startsWith('http') || option.audio.startsWith('/')
-                ? (option.audio.startsWith('/') ? `https://gilaniel.ru${option.audio}` : option.audio)
+                ? (option.audio.startsWith('/') ? `${option.audio}` : option.audio)
                 : resolveAudioAsset(option.audio))
             : null;
 
@@ -80,7 +80,7 @@ export const MultipleChoiceExercise: React.FC<MultipleChoiceExerciseProps> = ({
                 // Воспроизводим аудио варианта ответа, если оно есть
                 if (optionAudioSource) {
                   const source = optionAudioSource.startsWith('http') || optionAudioSource.startsWith('/')
-                    ? { uri: optionAudioSource.startsWith('/') ? `https://gilaniel.ru${optionAudioSource}` : optionAudioSource }
+                    ? { uri: optionAudioSource.startsWith('/') ? `${optionAudioSource}` : optionAudioSource }
                     : resolveAudioAsset(optionAudioSource);
                   if (source) {
                     await audioPlayer.play(typeof source === 'string' ? { uri: source } : source);

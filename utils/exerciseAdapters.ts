@@ -113,7 +113,7 @@ interface AdaptedMatchingExercise {
   };
 }
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://gilaniel.ru';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? '';
 
 /**
  * Преобразует URL в полный путь, если это относительный путь

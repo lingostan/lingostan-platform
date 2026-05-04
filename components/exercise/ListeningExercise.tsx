@@ -27,13 +27,13 @@ export const ListeningExercise: React.FC<ListeningExerciseProps> = ({
   const imageSource: { uri: string } | ImageSourcePropType | null = useMemo(() => {
     if (!data.image) return null;
     if (data.image.startsWith('http') || data.image.startsWith('/')) {
-      return { uri: data.image.startsWith('/') ? `https://gilaniel.ru${data.image}` : data.image };
+      return { uri: data.image.startsWith('/') ? `${data.image}` : data.image };
     }
     return resolveImageAsset(data.image) || null;
   }, [data.image]);
   const audioSource = data.letterAudio
     ? (data.letterAudio.startsWith('http') || data.letterAudio.startsWith('/')
-        ? (data.letterAudio.startsWith('/') ? `https://gilaniel.ru${data.letterAudio}` : data.letterAudio)
+        ? (data.letterAudio.startsWith('/') ? `${data.letterAudio}` : data.letterAudio)
         : resolveAudioAsset(data.letterAudio))
     : null;
 
@@ -56,7 +56,7 @@ export const ListeningExercise: React.FC<ListeningExerciseProps> = ({
               onPress={async () => {
                 if (typeof audioSource !== 'string') return;
                 const source = audioSource.startsWith('http') || audioSource.startsWith('/')
-                  ? { uri: audioSource.startsWith('/') ? `https://gilaniel.ru${audioSource}` : audioSource }
+                  ? { uri: audioSource.startsWith('/') ? `${audioSource}` : audioSource }
                   : resolveAudioAsset(audioSource);
                 if (source) {
                   const playbackSource = typeof source === 'string' 
@@ -136,7 +136,7 @@ export const ListeningExercise: React.FC<ListeningExerciseProps> = ({
 
           const optionAudioSource = (option as any).audio
             ? ((option as any).audio.startsWith('http') || (option as any).audio.startsWith('/')
-                ? ((option as any).audio.startsWith('/') ? `https://gilaniel.ru${(option as any).audio}` : (option as any).audio)
+                ? ((option as any).audio.startsWith('/') ? `${(option as any).audio}` : (option as any).audio)
                 : resolveAudioAsset((option as any).audio))
             : null;
 
@@ -149,7 +149,7 @@ export const ListeningExercise: React.FC<ListeningExerciseProps> = ({
                   // Воспроизводим аудио варианта ответа, если оно есть
                   if (optionAudioSource) {
                     const source = optionAudioSource.startsWith('http') || optionAudioSource.startsWith('/')
-                      ? { uri: optionAudioSource.startsWith('/') ? `https://gilaniel.ru${optionAudioSource}` : optionAudioSource }
+                      ? { uri: optionAudioSource.startsWith('/') ? `${optionAudioSource}` : optionAudioSource }
                       : resolveAudioAsset(optionAudioSource);
                     if (source) {
                       await audioPlayer.play(typeof source === 'string' ? { uri: source } : source);

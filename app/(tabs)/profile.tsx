@@ -140,7 +140,7 @@ export default function Profile() {
             style={styles.infoAvatar}
             resizeMode="cover"
             source={{ uri: user.avatarUrl.startsWith('http') || user.avatarUrl.startsWith('/') 
-              ? (user.avatarUrl.startsWith('/') ? `https://gilaniel.ru${user.avatarUrl}` : user.avatarUrl)
+              ? (user.avatarUrl.startsWith('/') ? `${user.avatarUrl}` : user.avatarUrl)
               : user.avatarUrl }}
           />
         ) : (

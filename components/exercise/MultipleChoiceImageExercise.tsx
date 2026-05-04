@@ -36,14 +36,14 @@ const ImageOptionItem: React.FC<ImageOptionItemProps> = React.memo(({
   const imageSource = useMemo(() => {
     if (!option.image) return null;
     if (option.image.startsWith('http') || option.image.startsWith('/')) {
-      return { uri: option.image.startsWith('/') ? `https://gilaniel.ru${option.image}` : option.image };
+      return { uri: option.image.startsWith('/') ? `${option.image}` : option.image };
     }
     return resolveImageAsset(option.image);
   }, [option.image]);
 
   const optionAudioSource = (option as any).audio && typeof (option as any).audio === 'string'
     ? ((option as any).audio.startsWith('http') || (option as any).audio.startsWith('/')
-        ? ((option as any).audio.startsWith('/') ? `https://gilaniel.ru${(option as any).audio}` : (option as any).audio)
+        ? ((option as any).audio.startsWith('/') ? `${(option as any).audio}` : (option as any).audio)
         : resolveAudioAsset((option as any).audio))
     : null;
 
@@ -82,7 +82,7 @@ const ImageOptionItem: React.FC<ImageOptionItemProps> = React.memo(({
           // Воспроизводим аудио варианта ответа, если оно есть
           if (optionAudioSource && typeof optionAudioSource === 'string') {
             const source = optionAudioSource.startsWith('http') || optionAudioSource.startsWith('/')
-              ? { uri: optionAudioSource.startsWith('/') ? `https://gilaniel.ru${optionAudioSource}` : optionAudioSource }
+              ? { uri: optionAudioSource.startsWith('/') ? `${optionAudioSource}` : optionAudioSource }
               : resolveAudioAsset(optionAudioSource);
             if (source) {
               const playbackSource = typeof source === 'string' 
@@ -118,7 +118,7 @@ export const MultipleChoiceImageExercise: React.FC<MultipleChoiceImageExercisePr
   
   const letterAudioSource = data.letterAudio
     ? (data.letterAudio.startsWith('http') || data.letterAudio.startsWith('/')
-        ? (data.letterAudio.startsWith('/') ? `https://gilaniel.ru${data.letterAudio}` : data.letterAudio)
+        ? (data.letterAudio.startsWith('/') ? `${data.letterAudio}` : data.letterAudio)
         : resolveAudioAsset(data.letterAudio))
     : null;
 
@@ -138,7 +138,7 @@ export const MultipleChoiceImageExercise: React.FC<MultipleChoiceImageExercisePr
             onPress={async () => {
               if (typeof letterAudioSource !== 'string') return;
               const source = letterAudioSource.startsWith('http') || letterAudioSource.startsWith('/')
-                ? { uri: letterAudioSource.startsWith('/') ? `https://gilaniel.ru${letterAudioSource}` : letterAudioSource }
+                ? { uri: letterAudioSource.startsWith('/') ? `${letterAudioSource}` : letterAudioSource }
                 : resolveAudioAsset(letterAudioSource);
               if (source) {
                 const playbackSource = typeof source === 'string' 
